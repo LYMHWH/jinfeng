@@ -1,0 +1,86 @@
+@charset "UTF-8";
+/* 颜色集合  */
+.ztree li span.button.ico_open {
+  background-position: -80px -50px !important;
+}
+
+.ztree li span.button.ico_close, .ztree li span.button.ico_docu {
+  background-position: -85px -78px !important;
+}
+
+.ztree li span.button.ico_docu {
+  background: url(../../static/images/pic_space_sprite.png) no-repeat 0 0;
+}
+
+.ztree li span.add, .ztree li span.edit, .ztree li span.remove {
+  width: 14px;
+  margin: 0 4px;
+  background-position: 0 -85px !important;
+  background-image: url("../../static/images/pic_space_sprite.png");
+  background-repeat: no-repeat;
+}
+
+.ztree li span.remove {
+  background-position: 0 -55px !important;
+}
+
+.ztree li span.edit {
+  background-position: 0 -27px !important;
+}
+
+.close_win:hover {
+  border-color: #007aff;
+}
+
+.webuploader-pick {
+  width: 120px;
+  height: 30px;
+  line-height: 30px;
+  padding: 0 !important;
+}
+
+#filePicker2 .webuploader-pick {
+  width: 80px;
+  height: 30px;
+  line-height: 30px;
+  padding: 5px !important;
+}
+
+#picture_tree a:hover {
+  text-decoration: none;
+  color: #007aff;
+}
+
+.ztree li span.button.center_close {
+  margin: 0 0 10px;
+}
+
+.mCSB_scrollTools .mCSB_dragger .mCSB_dragger_bar {
+  background: #007aff;
+}
+
+.cmd_pic_manage .title_ct {
+  border: none !important;
+  background-color: #f5f7fa;
+  height: 48px;
+  line-height: 48px;
+}
+
+.picselected {
+  width: 30px !important;
+  height: 30px !important;
+  top: 0 !important;
+}
+
+.form-checkbox .on {
+  background: url("../../static/images/checked.png") no-repeat;
+}
+
+.blue_add_icon {
+  background: url("../../static/images/add.png") no-repeat;
+}
+
+.operation_bt a:hover {
+  color: #007aff;
+}
+/*# sourceMappingURL=image_space.css.map */
