@@ -68,6 +68,7 @@
         </el-table-column>
       </el-table>
     </div>
+    <!--
     <div class="pagination" v-if="tableData.length">
       <el-pagination
         @size-change="handleSizeChange"
@@ -79,6 +80,7 @@
         :total="tableData.length"
       ></el-pagination>
     </div>
+    -->
     <el-dialog :title="title?'编辑学生':'添加学生'" :visible.sync="show">
       <el-form :model="form" :rules="formRules" ref="form" label-width="100px">
         <el-form-item label="学生姓名：" prop="name">

@@ -23,7 +23,7 @@
       <el-table
         ref="multipleTable"
         border
-        :data="tableData"
+        :data="tableData.data"
         :cell-style="cellStyle"
         :header-cell-style="headerCellStyle"
         tooltip-effect="dark"
@@ -68,7 +68,7 @@
         </el-table-column>
       </el-table>
     </div>
-    <div class="pagination" v-if="tableData.length">
+    <div class="pagination" v-if="tableData.count">
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
@@ -76,7 +76,7 @@
         :page-sizes="[10, 25, 50, 100]"
         :page-size="10"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="tableData.length"
+        :total="tableData.count"
       ></el-pagination>
     </div>
     <el-dialog :title="title?'编辑':'添加'" :visible.sync="show">
@@ -198,7 +198,10 @@ export default {
         size: 10,
         skey: ""
       },
-      tableData:[],
+      tableData:{
+        count: 0,
+        data:[]
+      },
     };
   },
   methods: {
