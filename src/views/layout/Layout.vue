@@ -105,6 +105,8 @@
               <el-menu-item index="parentAccountManage">家长账号管理</el-menu-item>
               <el-menu-item index="cityPartnerManage">城市合伙人管理</el-menu-item>              
               <el-menu-item index="itemCategoryManage">商品类目管理</el-menu-item>
+              <el-menu-item index="styleManage">着装风格管理</el-menu-item>
+              <el-menu-item index="specialShapeManage">特殊体型管理</el-menu-item>
               <el-menu-item index="evaluateManage">评价管理</el-menu-item> 
               <!--<el-menu-item index="customerManage">客户管理</el-menu-item>-->
               <!--<el-menu-item index="bannerSetting">banner管理</el-menu-item>-->

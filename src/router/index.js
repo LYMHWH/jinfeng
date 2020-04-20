@@ -256,7 +256,17 @@ export const constantRouterMap = [
                 path: "/cityPartnerManage",
                 component: () => import("@/views/cityPartnerManage"),
                 name: "cityPartnerManage"
-            }
+            },
+            {
+                path: "/styleManage",
+                component: () => import("@/views/styleManage"),
+                name: "styleManage"
+            },
+            {
+                path: "/specialShapeManage",
+                component: () => import("@/views/specialShapeManage"),
+                name: "specialShapeManage"
+            },
         ]
     }
 ];
