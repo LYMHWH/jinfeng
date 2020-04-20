@@ -83,7 +83,9 @@
                                             <i class="el-icon-delete avatar-delet" @click="rmImage(item,i)"></i>
                                         </div>
                                     </div>
-                                    <el-input placeholder="请输入" v-model="val.name"></el-input>
+                                    <div style="margin:10px 0;"><span>工艺名称：</span><el-input placeholder="请输入" style="width:100px;" v-model="val.name"></el-input></div>
+                                    <div><span>工艺编码：</span><el-input placeholder="请输入" style="width:100px;" v-model="val.code"></el-input></div>
+                                    <!--<el-input placeholder="请输入" v-model="val.name"></el-input>-->
                                 </div>
                                  <el-upload
                                     class="avatar-uploader"
@@ -168,7 +170,8 @@ export default {
       var { result } = res;
       this.form[`photos${this.index}`].push({
         url: result.oks.file[0].file_url,
-        name: ""
+        name: "",
+        code: "",
       });
     },
     beforeAvatarUpload(file) {
@@ -297,12 +300,13 @@ export default {
     display: flex;
     align-items: center;
     .card {
-      width: 100px;
+      width: 200px;
       margin: 0 20px 20px 0;
       img {
         width: 100px;
         height: 100px;
         display: block;
+        margin: 0 auto;
       }
     }
     .add {
