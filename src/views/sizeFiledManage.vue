@@ -41,6 +41,11 @@
                     show-overflow-tooltip>
                     </el-table-column>
                     <el-table-column
+                    prop="item_name"
+                    label="字段编码"
+                    show-overflow-tooltip>
+                    </el-table-column>
+                    <el-table-column
                     prop="item_alias"
                     label="别名"
                     show-overflow-tooltip>
@@ -59,6 +64,12 @@
                     show-overflow-tooltip>
                     </el-table-column>
                     <el-table-column
+                    prop="item_unit"
+                    label="示例"
+                    show-overflow-tooltip>
+                      <template slot-scope="scope"><el-button type="text" @click="checkBtn(scope.row)">查看</el-button></template>
+                    </el-table-column>
+                    <el-table-column
                     prop="remark"
                     label="备注"
                     show-overflow-tooltip>
@@ -74,15 +85,15 @@
                     show-overflow-tooltip>
                     </el-table-column>
                     <el-table-column
-					fixed="right"
-					label="操作"
+                    fixed="right"
+                    label="操作"
                     width="200"
-					>
-                        <template slot-scope="scope">
-                            <el-button @click="edit(scope.row)" type="text" size="small" >编辑</el-button>
-                            <el-button @click="del(scope.row)" type="text" size="small" class="red">删除</el-button>
-                            <el-button @click="rank(scope.row)" type="text" size="small" >更改排序</el-button>
-                        </template>
+					          >
+                      <template slot-scope="scope">
+                          <el-button @click="edit(scope.row)" type="text" size="small" >编辑</el-button>
+                          <el-button @click="del(scope.row)" type="text" size="small" class="red">删除</el-button>
+                          <el-button @click="rank(scope.row)" type="text" size="small" >更改排序</el-button>
+                      </template>
 				</el-table-column>
             </el-table>
         </div>
@@ -114,9 +125,12 @@
                 <el-form-item label="单位："  prop="item_unit">
                     <el-input v-model="form.item_unit" ></el-input>
                 </el-form-item>
-               
+                <el-form-item label="示例：">
+                  <up-image v-model="form.image_url" :params="{type_id:1}"/>
+                  <el-input type="textarea" placeholder="请输入示例描述" v-model="form.item_unit" ></el-input>
+                </el-form-item>
                 <el-form-item label="备注："  prop="remark">
-                    <el-input type="textarea" v-model="form.remark"></el-input>
+                    <el-input type="textarea" placeholder="请输入内容" v-model="form.remark"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -139,6 +153,12 @@
                 <el-button @click="show1 = false">取 消</el-button>
                 <el-button type="primary" @click="submit1">保 存</el-button>
             </div>
+        </el-dialog>
+        <el-dialog title="查看" :visible.sync="show2" >
+            <div>
+              <img src="" />
+            </div>
+            <div>教程描述文字</div>
         </el-dialog>
     </div>
 </template>
@@ -179,6 +199,7 @@ export default {
         },
       show: false,
       show1: false,
+      show2: false,
       title: 0,
       form: {
         item_name: "",
@@ -231,6 +252,9 @@ export default {
     };
   },
   methods: {
+    checkBtn(row){
+      this.show2 = true;
+    },
     query_submit() {
       this.queryParams.page = 1;
       this.query();
