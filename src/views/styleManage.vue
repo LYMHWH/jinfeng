@@ -10,9 +10,9 @@
           <el-button @click="add">添加</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button @click="add">上移</el-button>
+          <el-button @click="moveUp">上移</el-button>
         </el-form-item><el-form-item>
-          <el-button @click="add">下移</el-button>
+          <el-button @click="moveDown">下移</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -25,14 +25,16 @@
         :header-cell-style="headerCellStyle"
         tooltip-effect="dark"
         style="width: 100%"
+        @current-change="handleSelectionChange"
+        highlight-current-row
       >
         <el-table-column type="index" width="50"></el-table-column>
-        <el-table-column prop="nickname" label="着装风格"></el-table-column>
-        <el-table-column prop="is_locked" label="状态" show-overflow-tooltip>
+        <el-table-column prop="name" label="着装风格"></el-table-column>
+        <el-table-column prop="status_id" label="状态" show-overflow-tooltip>
           <template slot-scope="scope">
             <span
-              :class="[scope.row.is_locked ?'red':'green']"
-              v-text="scope.row.is_locked ?'停用':'启用'"
+              :class="[scope.row.status_id ?'red':'green']"
+              v-text="scope.row.status_id ?'停用':'启用'"
             ></span>
           </template>
         </el-table-column>
@@ -45,8 +47,8 @@
               @click="setting(scope.row)"
               type="text"
               size="small"
-              :class="[scope.row.is_locked ?'green':'red']"
-            >{{scope.row.is_locked ?'启用':'停用'}}</el-button>
+              :class="[scope.row.status_id ?'green':'red']"
+            >{{scope.row.status_id ?'启用':'停用'}}</el-button>
             <el-button @click="del(scope.row)" type="text" size="small" class="red">删除</el-button>
           </template>
         </el-table-column>
@@ -63,10 +65,10 @@
         :total="tableData.count"
       ></el-pagination>
     </div>
-    <el-dialog :title="title?'编辑':'添加'" :visible.sync="show">
+    <el-dialog :title="title?'编辑':'添加'" :visible.sync="show" width="500px">
       <el-form :model="form" :rules="formRules" ref="form" label-width="100px">
-        <el-form-item label="着装风格：" prop="styleName">
-          <el-input style="width:300px;" v-model="form.styleName" placeholder="请输入着装风格"></el-input>
+        <el-form-item label="着装风格：" prop="name">
+          <el-input style="width:300px;" v-model="form.name" placeholder="请输入着装风格"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -91,12 +93,12 @@ export default {
       show: false,
       title: 0,
       formRules: {
-        styleName: [
+        name: [
           { required: true, message: "请输入着装风格", trigger: "blur" }
         ],
       },
       form: {
-        styleName: "",
+        name: "",
       },
       formLabelWidth: "70px",
       queryParams: {
@@ -108,30 +110,39 @@ export default {
         count: 0,
         data:[]
       },
+      multipleSelection: null, //选中的行数据
     };
   },
   methods: {
-    query_submit() {
-      this.queryParams.page = 1;
-      this.query();
+    handleSelectionChange(val){
+      this.multipleSelection = val;
     },
     setting(row) {
-      var data = { id: row.id, is_locked: 1 };
-      if (row.is_locked === 1) {
-        data.is_locked = 0;
+      var data = { id: row.id, status_id: 1 };
+      var text = '停用'
+      if (row.status_id === 1) {
+        data.status_id = 0;
+        text = '启用'
       }
-      this.$q({
-        method: "post",
-        url: "/bg_admin/bg_management/set_city_user_status",
-        data
-      }).then(res => {
-        this.$message.success("操作成功");
-        this.query();
-      });
+      this.$confirm(`确定要${text}?`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$q({
+            method: "post",
+            url: "/bg_admin/wearing_style/modifyStyleStatus",
+            data
+          }).then(res => {
+            this.$message.success("操作成功");
+            this.query();
+          });
+        }).catch(() => {
+        });
     },
     query() {
       this.$q({
-        url: "/bg_admin/bg_management/city_user_list",
+        url: "/bg_admin/wearing_style/manageStyle",
         params: this.queryParams
       }).then(res => {
         this.tableData = res;
@@ -145,25 +156,62 @@ export default {
     del(row) {
       this.delete(
         "确定要删除吗？",
-        "/bg_admin/bg_management/del_city_user",
+        "/bg_admin/wearing_style/deleteStyle",
         { id: row.id }
       );
     },
     edit(row) {
       this.title = 1;
       this.form.id = row.id;
-      this.form.styleName = row.styleName;
+      this.form.name = row.name;
       this.show = true;
     },
     submit() {
-      var url = "/bg_admin/bg_management/add_city_user";
+      var url = "/bg_admin/wearing_style/addStyle";
       if (this.title) {
-        url = "/bg_admin/bg_management/edit_city_user";
+        url = "/bg_admin/wearing_style/editStyle";
       }
       this.post("form", url, this.form, "show");
     },
-    checkStudent(row) {
-      this.$router.push({ path: "/studentManage",query:{id:row.id} });
+    moveUp() {
+      if(!this.condition()){
+        return;
+      }
+      var data = {
+        id: this.multipleSelection.id,
+      };
+      this.$q({
+        method: "post",
+        url: "/bg_admin/wearing_style/moveUp",
+        data
+      }).then(res => {
+        this.$message.success("已上移！");
+        this.query();
+      });
+    },
+    moveDown() {
+      if(!this.condition()){
+        return;
+      }
+      var data = {
+        id: this.multipleSelection.id,
+      };
+      this.$q({
+        method: "post",
+        url: "/bg_admin/wearing_style/moveDown",
+        data
+      }).then(res => {
+        this.$message.success("已下移！");
+        this.query();
+      });
+    },
+    condition(){
+      if(!this.multipleSelection){
+        this.$message.error('请先选择一行数据');
+        return false
+      } else {
+        return true
+      }
     }
   },
 

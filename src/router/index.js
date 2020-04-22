@@ -267,6 +267,11 @@ export const constantRouterMap = [
                 component: () => import("@/views/specialShapeManage"),
                 name: "specialShapeManage"
             },
+            {
+                path: "/productTypeManage",
+                component: () => import("@/views/productTypeManage"),
+                name: "productTypeManage"
+            },
         ]
     }
 ];

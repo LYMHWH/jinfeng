@@ -125,6 +125,7 @@
             </template>
             <el-menu-item-group>
               <el-menu-item index="sizeFiledManage">尺码字段管理</el-menu-item>
+              <el-menu-item index="productTypeManage">产品类型管理</el-menu-item>
               <el-menu-item index="sizeTemplateManage">尺码模板管理</el-menu-item>
             </el-menu-item-group>	
           </el-submenu>

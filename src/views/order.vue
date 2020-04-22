@@ -5,7 +5,11 @@
       <el-breadcrumb-item>待处理订单</el-breadcrumb-item>
     </el-breadcrumb>
     <div class="btns">
-      <el-form :model="queryParams" :inline="true" label-width="120px">
+      <el-form :model="queryParams" :inline="true">
+        <el-form-item label="" v-if="isShowBatch">
+          <el-button type="primary" @click="cancel">确认不可生产</el-button>
+          <el-button type="primary" @click="confirm">确认可生产</el-button>
+        </el-form-item>
         <el-form-item label="订单状态：">
           <el-select
             placeholder="请选择"
@@ -36,15 +40,12 @@
             ></el-option>
           </el-select>
         </el-form-item>
-
-        <!-- <el-form-item >
-                    <el-button @click="add">添加备注</el-button>
-                </el-form-item>
-                <el-form-item >
-                    <span>
-                        待接单：<span style="font-size:30px;color:red">20</span>    
-                    </span>
-        </el-form-item>-->
+        <el-form-item label="学校：">
+          <el-select placeholder="请选择" @change="order_status_query1" v-model="queryParams.size_status_id	">
+            <el-option label="全部" :value="0"></el-option>
+            <el-option :label="item.name" :value="item.value" v-for="item in measuring_status_list" :key="item.value"></el-option>
+          </el-select>
+        </el-form-item>
         <div style="float:right;">
           <!-- <el-form-item>
             <el-input placeholder="订单号" v-model="queryParams.order_num"></el-input>
@@ -75,16 +76,14 @@
       </el-form>
     </div>
     <div class="table">
-      <el-table
-        ref="multipleTable"
-        border
-        :data="tableData.data"
-        :cell-style="cellStyle"
-        :header-cell-style="headerCellStyle"
-        tooltip-effect="dark"
-        style="width: 100%"
-      >
-        <el-table-column type="index" width="50"></el-table-column>
+      <el-table ref="multipleTable" border :data="tableData.data" :cell-style="cellStyle" :header-cell-style="headerCellStyle" tooltip-effect="dark" style="width: 100%" @selection-change="handleSelectionChange">
+        <el-table-column type="index" width="50" align="center">
+          <template scope="scope">
+            <span>{{scope.$index+(queryParams.page - 1) * queryParams.size + 1}} </span>
+          </template>
+        </el-table-column>
+        <el-table-column type="selection" width="44" align="center"></el-table-column>
+        <!--<el-table-column type="index" width="50"></el-table-column>-->
         <el-table-column prop="order_num" label="订单号" width="120" show-overflow-tooltip></el-table-column>
         <el-table-column
                     prop="main_title"
@@ -495,11 +494,16 @@ export default {
       cur_item: {},
       list1:[],
       title:"",
-       select:"order_num",
-       last_select:"order_num",
+      select:"order_num",
+      last_select:"order_num",
+      multipleSelection: [], //选中的行数据
+      isShowBatch: false, //是否显示批量操作
     };
   },
   methods: {
+    handleSelectionChange(val) {
+      this.multipleSelection = val;
+    },
     select_item(val){
         this.queryParams[this.last_select] = '';
         this.last_select =val;
@@ -612,6 +616,13 @@ export default {
       this.queryParams.order_status_id = value;
       this.queryParams.page = 1;
       this.query();
+      var that = this;
+      setTimeout(function(){
+        that.isShowBatch = false;
+        if(that.queryParams.order_status_id==2){
+          that.isShowBatch = true;
+        }
+      },200)
     },
     order_status_query1(value) {
       this.queryParams.size_status_id	 = value;
