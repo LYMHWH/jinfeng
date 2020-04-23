@@ -9,63 +9,58 @@
                 <div class="info-container">
                      <div class="title">基本信息：</div>
                     <div style="width:1200px;">
-                        <el-form-item :label="item.item_name+'：'" :prop="`item${item.id}`" v-for="(item,index) in list" :key="index"  :rules="[
+                        <!--<el-form-item :label="item.item_name+'：'" :prop="`item${item.id}`" v-for="(item,index) in list" :key="index"  :rules="[
       { required: item.is_search, message: `请选择${item.item_name}`, trigger: ['blur', 'change'] },
     ]">
                             <el-select v-model="form[`item${item.id}`]" placeholder="请选择">
                                 <el-option :label="v.item_value" :value="v.id" v-for="(v,i) in item.item_values"  :key="i"></el-option>
                             </el-select>
+                        </el-form-item>-->
+                        <el-form-item label="分类：" prop="classification">
+                            <el-select v-model="form.classification" placeholder="请选择">
+                                <el-option :label="v.item_value" :value="v.id" v-for="(v,i) in classificationList"  :key="i"></el-option>
+                            </el-select>
                         </el-form-item>
-                        <el-form-item label="面料号：" prop="fabric_num">
-                            <el-input v-model="form.fabric_num" placeholder="请输入面料号"></el-input>
+                        <el-form-item label="系列：" prop="series">
+                            <el-select v-model="form.series" placeholder="请选择">
+                                <el-option :label="v.item_value" :value="v.id" v-for="(v,i) in seriesList"  :key="i"></el-option>
+                            </el-select>
                         </el-form-item>
-                        <el-form-item label="纱支："  prop="yarn_count">
+                        <el-form-item label="面料编号：" prop="fabric_num">
+                            <el-input v-model="form.fabric_num" placeholder="请输入面料编号"></el-input>
+                        </el-form-item>
+                        <el-form-item label="面料品种：">
+                            <el-input v-model="form.fabric_variety" placeholder="请输入面料品种"></el-input>
+                        </el-form-item>
+                        <el-form-item label="面料名称：">
+                            <el-input v-model="form.fabric_name" placeholder="请输入面料名称"></el-input>
+                        </el-form-item>
+                        <el-form-item label="面料档次：" prop="grade">
+                            <el-select v-model="form.grade" placeholder="请选择">
+                                <el-option :label="v.item_value" :value="v.id" v-for="(v,i) in gradeList"  :key="i"></el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="面料颜色：" prop="color">
+                            <el-select v-model="form.color" placeholder="请选择">
+                                <el-option :label="v.item_value" :value="v.id" v-for="(v,i) in colorList"  :key="i"></el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="纱支：">
                             <el-input v-model="form.yarn_count" placeholder="请输入纱支"></el-input>
                         </el-form-item>
                         <el-form-item label="面料价格：" prop="price">
                             <div style="display:flex;">
-                                <el-input placeholder="请输入价格"  v-model.number="form.price"></el-input><span style="margin-left:10px;">元</span>
+                                <el-input placeholder="请输入价格" v-model.number="form.price"></el-input><span style="margin-left:10px;">元</span>
                             </div>
                         </el-form-item>
-                        <!-- <el-form-item label="系列："  prop="">
-                            <el-select v-model="form.region" placeholder="请选择">
-                                <el-option label="区域一" value="shanghai"></el-option>
-                                <el-option label="区域二" value="beijing"></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item label="属性："  prop="">
-                            <el-select v-model="form.region" placeholder="请选择">
-                                <el-option label="区域一" value="shanghai"></el-option>
-                                <el-option label="区域二" value="beijing"></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item label="花型："  prop="">
-                            <el-select v-model="form.region" placeholder="请选择">
-                                <el-option label="区域一" value="shanghai"></el-option>
-                                <el-option label="区域二" value="beijing"></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item label="面料档次："  prop="">
-                            <el-select v-model="form.region" placeholder="请选择">
-                                <el-option label="区域一" value="shanghai"></el-option>
-                                <el-option label="区域二" value="beijing"></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item label="颜色："  prop="">
-                            <el-select v-model="form.region" placeholder="请选择">
-                                <el-option label="区域一" value="shanghai"></el-option>
-                                <el-option label="区域二" value="beijing"></el-option>
-                            </el-select>
-                        </el-form-item> -->
                     </div>
                     <div v-for="(item,index) in list1" :key="index" >
-                        <el-form-item :label="item.item_name+'：'"  :prop="`item${item.id}`" :rules="[
-      { type:'array', required: item.is_search, message: `请选择${item.item_name}`, trigger:'change'},
-    ]">                     <div style="width:1000px;">
-                                <el-checkbox-group  v-model="form[`item${item.id}`]">
-                                    <el-checkbox  v-for="(v,i) in item.item_values" :label="v.id"    :key="i" :name="`item${item.id}`">{{v.item_value}}</el-checkbox>
-                                </el-checkbox-group>
-                            </div>
+                        <el-form-item :label="item.item_name+'：'"  :prop="`item${item.id}`">
+                          <div style="width:1000px;">
+                            <el-checkbox-group  v-model="form[`item${item.id}`]">
+                              <el-checkbox  v-for="(v,i) in item.item_values" :label="v.id"    :key="i" :name="`item${item.id}`">{{v.item_value}}</el-checkbox>
+                            </el-checkbox-group>
+                          </div>
                         </el-form-item>
                     </div>
                 </div>
@@ -120,6 +115,12 @@ export default {
         fabric_num: "",
         yarn_count: "",
         price: "0.00",
+        classification: "",
+        series: "",
+        grade: "",
+        color: "",
+        fabric_variety: "",
+        fabric_name: "",
         fabric_photos: [],
         clothing_photos: [],
         model_photos: [],
@@ -130,11 +131,29 @@ export default {
         fabric_num: [
           { required: true, message: "请输入面料号", trigger: "blur" }
         ],
-        price: [
-          { required: true, message: "请填写价格", trigger: "blur" }
-        ],
+        price: [{ required: true, message: "请填写价格", trigger: "blur" }],
         yarn_count: [
           { required: true, message: "请输入纱支", trigger: "blur" }
+        ],
+        classification: [
+          { required: true, message: "请选择分类", trigger: "change" }
+        ],
+        series: [
+          { required: true, message: "请选择面料系列", trigger: "change" }
+        ],
+        grade: [
+          { required: true, message: "请选择面料档次", trigger: "change" }
+        ],
+        color: [
+          { required: true, message: "请选择面料颜色", trigger: "change" }
+        ],
+        item7: [
+          {
+            type: "array",
+            required: true,
+            message: "请选择成分",
+            trigger: "change"
+          }
         ],
         fabric_photos: [
           {
@@ -162,7 +181,11 @@ export default {
         ]
       },
       list: [],
-      list1: []
+      list1: [],
+      classificationList: [], //分类列表
+      seriesList: [], //系列列表
+      gradeList: [], //档次列表
+      colorList: [] //颜色列表
     };
   },
   methods: {
@@ -170,12 +193,12 @@ export default {
     //   this.form.fabric_photos = val;
     // },
     cancel1() {
-       this.$router.push({ path: "/fabricList" });
+      this.$router.push({ path: "/fabricList" });
     },
     process_data(obj) {
-      var data={},
+      var data = {},
         item_value_ids = [],
-		keys = Object.keys(obj);
+        keys = Object.keys(obj);
       keys.forEach(v => {
         if (v.startsWith("item")) {
           if (Array.isArray(obj[v])) {
@@ -188,7 +211,12 @@ export default {
         } else {
           data[v] = obj[v];
         }
-	  });
+      });
+      console.log(item_value_ids);
+      item_value_ids.push({ item_value_id: obj.classification });
+      item_value_ids.push({ item_value_id: obj.series });
+      item_value_ids.push({ item_value_id: obj.grade });
+      item_value_ids.push({ item_value_id: obj.color });
       data["item_value_ids"] = item_value_ids;
       data["fabric_photos"] = data["fabric_photos"];
       data["clothing_photos"] = data["clothing_photos"];
@@ -225,8 +253,21 @@ export default {
             this.form[`item${v.id}`] = [];
           } else {
             this.list.push(v);
+            if (v.id === 1) {
+              this.classificationList = v.item_values; //分类
+            }
+            if (v.id === 2) {
+              this.seriesList = v.item_values; //系列
+            }
+            if (v.id === 3) {
+              this.gradeList = v.item_values; //档次
+            }
+            if (v.id === 5) {
+              this.colorList = v.item_values; //颜色
+            }
           }
         });
+        console.log("classificationList:" + this.classificationList);
       });
     }
   },
@@ -277,14 +318,14 @@ export default {
     height: 178px;
     display: block;
   }
-  .info-container{
-      overflow: hidden;
-      margin-right:50px; 
-      border-bottom:1px dotted #ddd; 
-      margin-bottom: 20px;
-      .el-form-item{
-          float: left;
-      }
+  .info-container {
+    overflow: hidden;
+    margin-right: 50px;
+    border-bottom: 1px dotted #ddd;
+    margin-bottom: 20px;
+    .el-form-item {
+      float: left;
+    }
   }
 }
 </style>

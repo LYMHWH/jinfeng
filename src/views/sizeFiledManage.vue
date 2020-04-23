@@ -41,7 +41,7 @@
                     show-overflow-tooltip>
                     </el-table-column>
                     <el-table-column
-                    prop="item_name"
+                    prop="item_code"
                     label="字段编码"
                     show-overflow-tooltip>
                     </el-table-column>
@@ -113,7 +113,9 @@
                 <el-form-item label="字段名称："  prop="item_name">
                     <el-input v-model="form.item_name" ></el-input>
                 </el-form-item>
-               
+               <el-form-item label="字段编码："  prop="item_code">
+                    <el-input v-model="form.item_code" ></el-input>
+                </el-form-item>
                 <el-form-item label="字段别名："  prop="item_alias">
                     <el-input v-model="form.item_alias" ></el-input>
                 </el-form-item>
@@ -126,8 +128,8 @@
                     <el-input v-model="form.item_unit" ></el-input>
                 </el-form-item>
                 <el-form-item label="示例：">
-                  <up-image v-model="form.image_url" :params="{type_id:1}"/>
-                  <el-input type="textarea" placeholder="请输入示例描述" v-model="form.item_unit" ></el-input>
+                  <up-image v-model="form.example_img" :params="{type_id:1}"/>
+                  <el-input type="textarea" placeholder="请输入示例描述" v-model="form.example_desc" ></el-input>
                 </el-form-item>
                 <el-form-item label="备注："  prop="remark">
                     <el-input type="textarea" placeholder="请输入内容" v-model="form.remark"></el-input>
@@ -155,10 +157,10 @@
             </div>
         </el-dialog>
         <el-dialog title="查看" :visible.sync="show2" >
-            <div>
-              <img src="" />
+            <div style="text-align:center;">
+              <img :src="form2.example_img" />
             </div>
-            <div>教程描述文字</div>
+            <div style="text-align:center;margin-top:20px;">{{form2.example_desc}}</div>
         </el-dialog>
     </div>
 </template>
@@ -169,7 +171,7 @@ import upImage from "@/components/Upload/upImage";
 export default {
   name: "bannerSetting",
   mixins: [mixin],
-  filters:{
+  filters: {
     gender(val) {
       val = Number.parseInt(val);
       switch (val) {
@@ -186,52 +188,56 @@ export default {
           return "未知";
           break;
       }
-    },
+    }
   },
-   components: {
+  components: {
     upImage: upImage
   },
   data() {
     return {
-        tableData:{
-            count:0,
-            data:[]
-        },
+      tableData: {
+        count: 0,
+        data: []
+      },
       show: false,
       show1: false,
       show2: false,
       title: 0,
       form: {
         item_name: "",
+        item_code: "",
         item_alias: "",
         item_unit: "",
-        item_gender_type_id: '',
-        remark:""
+        item_gender_type_id: "",
+        example_img: "",
+        example_desc: "",
+        remark: ""
       },
       formRules: {
         item_name: [
           { required: true, message: "请填写尺码字段名称", trigger: "blur" }
+        ],
+        item_code: [
+          { required: true, message: "请填写字段编码", trigger: "blur" }
         ],
         item_unit: [
           { required: true, message: "请填写尺码字段单位", trigger: "blur" }
         ],
         item_gender_type_id: [
           { required: true, message: "请选择字段性别", trigger: "blur" }
-        ],
+        ]
       },
-      genderList:[
-        {name: '男女都有', value: 0},
-        {name: '男士专属', value: 1},
-        {name: '女士专属', value: 2},
+      genderList: [
+        { name: "男女都有", value: 0 },
+        { name: "男士专属", value: 1 },
+        { name: "女士专属", value: 2 }
       ],
       form1: {
-       id:"",
-       rank:""
+        id: "",
+        rank: ""
       },
       formRules1: {
-        rank: [
-          { required: true, message: "请输入排序号", trigger: "blur" }
-        ]
+        rank: [{ required: true, message: "请输入排序号", trigger: "blur" }]
       },
       attr: "",
       attr_list: [],
@@ -243,25 +249,32 @@ export default {
       queryParams: {
         size: 10,
         index: 1,
-        item_name:"",
-        item_alias:"",
+        item_name: "",
+        item_alias: ""
       },
       item_name: "",
       item_id: "",
-
+      form2: {
+        example_img: "",
+        example_desc: ""
+      }
     };
   },
   methods: {
-    checkBtn(row){
+    checkBtn(row) {
+      this.form2 = {
+        example_img: row.example_img,
+        example_desc: row.example_desc
+      };
       this.show2 = true;
     },
     query_submit() {
       this.queryParams.page = 1;
       this.query();
     },
-    rank(row){
-        this.form1 = { ...this.form1, ...row };
-        this.show1 = true;
+    rank(row) {
+      this.form1 = { ...this.form1, ...row };
+      this.show1 = true;
     },
     setting(row) {
       var data = { id: row.id, status: 1 };
@@ -293,17 +306,14 @@ export default {
       });
     },
     add() {
-
       this.clean(this.form);
       this.title = 0;
       this.show = true;
     },
     del(row) {
-      this.delete(
-        "您确认删除该尺码字段吗？",
-        "/bg_admin/size/deleteItem",
-        { id: row.id }
-      );
+      this.delete("您确认删除该尺码字段吗？", "/bg_admin/size/deleteItem", {
+        id: row.id
+      });
     },
     edit(row) {
       this.title = 1;
@@ -318,7 +328,7 @@ export default {
       this.post("form", url, this.form, "show");
     },
     submit1() {
-       this.post("form1", '/bg_admin/size/sortItem', this.form1, "show1");
+      this.post("form1", "/bg_admin/size/sortItem", this.form1, "show1");
     },
     add_attr() {
       var val = this.attr.trim();
@@ -376,9 +386,9 @@ export default {
     height: 178px;
     display: block;
   }
-  .img{
-      width: 50px;
-      height: 50px;
+  .img {
+    width: 50px;
+    height: 50px;
   }
 }
 </style>

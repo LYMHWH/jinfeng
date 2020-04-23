@@ -59,15 +59,15 @@
     </el-tree>
     <el-dialog :title="title?'修改部位':'添加部位'" :visible.sync="show" width="520px">
       <el-form :model="form" :rules="formRules" ref="form" label-width="140px">
-        <el-form-item label="部位名称：" prop="styleName">
-          <el-input style="width:300px;" v-model="form.styleName" placeholder="请输入部位名称"></el-input>
+        <el-form-item label="部位名称：" prop="shape_name">
+          <el-input style="width:300px;" v-model="form.shape_name" placeholder="请输入部位名称"></el-input>
         </el-form-item>
-        <el-form-item label="部位编码：" prop="styleName">
-          <el-input style="width:300px;" v-model="form.styleName" placeholder="请输入部位编码"></el-input>
+        <el-form-item label="部位编码：" prop="shape_code">
+          <el-input style="width:300px;" v-model="form.shape_code" placeholder="请输入部位编码"></el-input>
         </el-form-item>
-        <el-form-item label="所属产品类型：" prop="styleName">
-          <el-checkbox-group  v-model="checkList">
-            <el-checkbox v-for="(v,i) in sizeList" :label="v.item_id" :key="i">{{v.item_name}}</el-checkbox>
+        <el-form-item label="所属产品类型：" prop="cate_ids">
+          <el-checkbox-group  v-model="form.cate_ids">
+            <el-checkbox v-for="(v,i) in productTypeList" :label="v.id" :key="i">{{v.name}}</el-checkbox>
           </el-checkbox-group>
         </el-form-item>
       </el-form>
@@ -77,17 +77,17 @@
       </div>
     </el-dialog>
     <el-dialog :title="title1?'修改特征':'添加特征'" :visible.sync="show1" width="500px">
-      <el-form :model="form" :rules="formRules" ref="form" label-width="100px">
-        <el-form-item label="特征名称：" prop="styleName">
-          <el-input style="width:300px;" v-model="form.styleName" placeholder="请输入特征名称"></el-input>
+      <el-form :model="form1" :rules="formRules1" ref="form1" label-width="100px">
+        <el-form-item label="特征名称：" prop="special_name">
+          <el-input style="width:300px;" v-model="form1.special_name" placeholder="请输入特征名称"></el-input>
         </el-form-item>
-        <el-form-item label="特征编码：" prop="styleName">
-          <el-input style="width:300px;" v-model="form.styleName" placeholder="请输入特征编码"></el-input>
+        <el-form-item label="特征编码：" prop="special_code">
+          <el-input style="width:300px;" v-model="form1.special_code" placeholder="请输入特征编码"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="show1 = false">取 消</el-button>
-        <el-button type="primary" @click="submit">确定</el-button>
+        <el-button type="primary" @click="submit1">确定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -99,7 +99,7 @@ import upImage from "@/components/Upload/upImage";
 export default {
   name: "specialShapeManage",
   mixins: [mixin],
-   components: {
+  components: {
     upImage: upImage
   },
   data() {
@@ -109,52 +109,59 @@ export default {
       title: 0,
       title1: 0,
       formRules: {
-        styleName: [
-          { required: true, message: "请输入着装风格", trigger: "blur" }
+        shape_name: [
+          { required: true, message: "请输入部位名称", trigger: "blur" }
         ],
+        shape_code: [
+          { required: true, message: "请输入部位编码", trigger: "blur" }
+        ],
+        cate_ids: [
+          { required: true, message: "请选择产品类型", trigger: "change" }
+        ]
       },
       form: {
-        styleName: "",
+        shape_name: "",
+        shape_code: "",
+        cate_ids: []
       },
-      formLabelWidth: "70px",
+      form1: {
+        special_name: "",
+        special_code: "",
+        shape_id: ""
+      },
+      formRules1: {
+        special_name: [
+          { required: true, message: "请输入特征名称", trigger: "blur" }
+        ],
+        special_code: [
+          { required: true, message: "请输入特征编码", trigger: "blur" }
+        ]
+      },
       queryParams: {
         size: 10,
         page: 1,
-        skey:"",
+        skey: ""
       },
-      tableData:{
+      tableData: {
         count: 0,
-        data:[]
+        data: []
       },
-      data: [
-        {
-          "id":23,"name":"西服","cate_code":null,"branch":1,"level_id":1,"price":"","is_quota":1,"is_leaf":"0",
-          "children":[
-            {"id":2,"name":"两件套","cate_code":null,"branch":1,"level_id":2,"is_quota":1,"is_leaf":"0",
-            "children":[
-              {"id":5,"name":"粘合衬","branch":1,"level_id":3,"is_quota":1,"is_leaf":"1",},
-              {"id":31,"name":"半麻衬","branch":1,"level_id":3,"is_quota":1,"is_leaf":"1",},
-              {"id":32,"name":"全麻衬","branch":1,"level_id":3,"is_quota":1,"is_leaf":"1",},
-              {"id":56,"name":"测试","branch":1,"level_id":3,"is_quota":1,"is_leaf":"1",}
-            ]}
-          ]
-        }
-      ],
+      data: [],
       defaultProps: {
         children: "children",
         label: "name"
       },
-      sizeList: [],
-      checkList: [],
+      productTypeList: [],
+      checkList: []
     };
   },
   methods: {
-    getSizeItems(){
+    getProductCates() {
       this.$q({
-        url:'/bg_admin/size/getSizeItems'
-      }).then(res=>{
-        this.sizeList=res;
-      })
+        url: "/bg_admin/product_category/getProductCates"
+      }).then(res => {
+        this.productTypeList = res;
+      });
     },
     query_submit() {
       this.queryParams.page = 1;
@@ -176,10 +183,10 @@ export default {
     },
     query() {
       this.$q({
-        url: "/bg_admin/bg_management/city_user_list",
-        params: this.queryParams
+        url: "/bg_admin/special_shape/manageShape"
       }).then(res => {
-        this.tableData = res;
+        this.data = [];
+        this.data.push(res);
       });
     },
     add() {
@@ -188,27 +195,32 @@ export default {
       this.show = true;
     },
     del(row) {
-      this.delete(
-        "确定要删除吗？",
-        "/bg_admin/bg_management/del_city_user",
-        { id: row.id }
-      );
+      this.delete("确定要删除吗？", "/bg_admin/bg_management/del_city_user", {
+        id: row.id
+      });
     },
     edit(row) {
       this.title = 1;
       this.form.id = row.id;
-      this.form.styleName = row.styleName;
+      this.form.name = row.name;
       this.show = true;
     },
     submit() {
-      var url = "/bg_admin/bg_management/add_city_user";
+      var url = "/bg_admin/special_shape/addShape";
       if (this.title) {
-        url = "/bg_admin/bg_management/edit_city_user";
+        url = "/bg_admin/special_shape/editShape";
       }
       this.post("form", url, this.form, "show");
     },
+    submit1() {
+      var url = "/bg_admin/special_shape/addSpecial";
+      if (this.title1) {
+        url = "/bg_admin/special_shape/editSpecial";
+      }
+      this.post("form1", url, this.form1, "show1");
+    },
     checkStudent(row) {
-      this.$router.push({ path: "/studentManage",query:{id:row.id} });
+      this.$router.push({ path: "/studentManage", query: { id: row.id } });
     },
     handleDragStart(node, ev) {
       // console.log("drag start", node);
@@ -249,58 +261,65 @@ export default {
     },
     //添加特征
     append(node, data) {
-      this.form1 = {};
-      // this.form1.parent_id = data.id;
-      // this.form1.level_id = data.level_id + 1;
+      console.log(data);
+      this.form1 = {
+        special_name: "",
+        special_code: "",
+        shape_id: data.id
+      };
       this.show1 = true;
       this.title1 = 0;
     },
     //点击修改
     modify(node, data) {
-      if(data.is_leaf == '1'){//叶子节点
-        // console.log(data)
-        // data.branch === 3 ? (this.checkList = ["1", "2"]) : data.branch ? (this.checkList = [String(data.branch)]) : (this.checkList = []);
-        // this.form1 = {};
-        // this.form1 = {
-        //   id: data.id,
-        //   cate_name: data.name
-        // };
-        // this.item_ids = data.data_item_ids.map(Number);
-        // this.special_ids = data.special_shape_ids.map(Number);
-        // this.style_ids = data.wearing_style_ids.map(Number);
-        // this.taohao_codes = (data.cate_code && data.cate_code.split(',')) || []
+      if (data.is_leaf == "1") {
+        //叶子节点
+        this.form1 = {
+          id: data.id,
+          special_name: data.name,
+          special_code: data.code,
+          shape_id: node.parent.data.id
+        };
         this.title1 = 1;
         this.show1 = true;
-      } else {//非叶子节点
-        this.form = {};
-        // this.form = {
-        //   id: data.id,
-        //   cate_name: data.name
-        // };
+      } else {
+        //非叶子节点
+        this.form = {
+          id: data.id,
+          shape_name: data.name,
+          shape_code: data.code,
+          cate_ids: data.cate_ids.map(Number)
+        };
         this.title = 1;
         this.show = true;
       }
     },
     remove(node, data) {
       //删除
-      this.delete(
-        "确定要删除该深度设计流程吗？此操作是不可恢复的！",
-        "/customized_mall/fast.management/deleteCustomzied",
-        {
-          id: data.id
-        }
-      );
+      var url = "/bg_admin/special_shape/deleteShape";
+      if (data.is_leaf == "1") {
+        //叶子节点
+        url = "/bg_admin/special_shape/deleteSpecial";
+      }
+      this.delete("确定要删除吗？此操作是不可恢复的！", url, {
+        id: data.id
+      });
     },
     //添加部位
     addParts(node, data) {
       this.title = 0;
       this.show = true;
-    },
+      this.form = {
+        shape_name: "",
+        shape_code: "",
+        cate_ids: []
+      };
+    }
   },
 
   created() {
     this.query();
-    this.getSizeItems();
+    this.getProductCates();
   }
 };
 </script>
@@ -321,7 +340,7 @@ export default {
   .red {
     color: red;
   }
-  
+
   .el-checkbox {
     margin-left: 0;
     margin-right: 30px;

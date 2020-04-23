@@ -13,6 +13,12 @@
                         <el-tab-pane :label="'未读（'+tableData.unread_count+'）'" name="0"></el-tab-pane>
                     </el-tabs>
                 </el-form-item>
+                <el-form-item label="消息类型：">
+                  <el-select placeholder="请选择" @change="handleClick" v-model="queryParams.type">
+                    <el-option label="全部" :value="0"></el-option>
+                    <el-option :label="item.name" :value="item.id" v-for="item in typeList" :key="item.id"></el-option>
+                  </el-select>
+                </el-form-item>
             </el-form>
         </div>
         <div class="table">
@@ -26,9 +32,9 @@
                     label="订单号"
                     show-overflow-tooltip
                     >
-                         <template slot-scope="scope">
-                            <el-button type="text" @click="check(scope.row)">{{scope.row.order_num}}</el-button>
-                        </template>
+                      <template slot-scope="scope">
+                        <el-button type="text" @click="check(scope.row)">{{scope.row.order_num}}</el-button>
+                      </template>
                     </el-table-column>
                     <el-table-column
                     prop="title"
@@ -40,7 +46,6 @@
                     label="消息内容"
                     show-overflow-tooltip>
                     </el-table-column>
-                 
                     <el-table-column
                     prop="update_time"
                     label="状态"
@@ -152,7 +157,8 @@ export default {
       queryParams: {
         size: 10,
         page: 1,
-       status_id:'-1'
+        status_id:'-1',
+        type: 0
       },
       formRules: {
         truename: [
@@ -188,6 +194,10 @@ export default {
       list: [],
       list1: [],
       date: [startDate, new Date()],
+      typeList: [
+        {id: 1, name: '催发货通知'},
+        {id: 2, name: '订单售后'},
+      ],
     };
   },
   methods: {

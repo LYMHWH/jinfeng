@@ -7,8 +7,8 @@
     <div class="btns">
       <el-form :model="queryParams" :inline="true">
         <el-form-item label="" v-if="isShowBatch">
-          <el-button type="primary" @click="cancel">确认不可生产</el-button>
-          <el-button type="primary" @click="confirm">确认可生产</el-button>
+          <!-- <el-button type="primary" @click="cancel">批量审核不通过</el-button> -->
+          <el-button type="primary" @click="batchAudit">批量审核通过</el-button>
         </el-form-item>
         <el-form-item label="订单状态：">
           <el-select
@@ -43,7 +43,7 @@
         <el-form-item label="学校：">
           <el-select placeholder="请选择" @change="order_status_query1" v-model="queryParams.size_status_id	">
             <el-option label="全部" :value="0"></el-option>
-            <el-option :label="item.name" :value="item.value" v-for="item in measuring_status_list" :key="item.value"></el-option>
+            <el-option :label="item.name" :value="item.id" v-for="item in schoolList" :key="item.id"></el-option>
           </el-select>
         </el-form-item>
         <div style="float:right;">
@@ -333,6 +333,7 @@
 
 <script>
 import mixin from "@/mixins/tableMixin";
+import { isRejected } from "q";
 export default {
   name: "order",
   mixins: [mixin],
@@ -400,7 +401,7 @@ export default {
       show3: false,
       form: {
         id: "",
-        reason: "",
+        reason: ""
       },
       form1: {
         id: "",
@@ -414,7 +415,7 @@ export default {
         province_code: "",
         city_code: "",
         district_code: "",
-        address: "",
+        address: ""
       },
       form2: {
         id: "",
@@ -426,7 +427,7 @@ export default {
         size: 10,
         page: 1,
         order_status_id: 0,
-        size_status_id	: 0,
+        size_status_id: 0,
         // order_num: "",
         // fabric_num: "",
         skey: ""
@@ -447,7 +448,7 @@ export default {
         ],
         express_num: [
           { required: true, message: "请输入物流单号", trigger: "blur" }
-        ],
+        ]
       },
       formRules3: {
         name: [
@@ -459,17 +460,15 @@ export default {
         province_code: [
           { required: true, message: "请选择省", trigger: "change" }
         ],
-        city_code: [
-          { required: true, message: "请选择市", trigger: "change" }
-        ],
+        city_code: [{ required: true, message: "请选择市", trigger: "change" }],
         district_code: [
           { required: true, message: "请选择区", trigger: "change" }
         ],
         address: [
           { required: true, message: "请输入详细地址", trigger: "blur" }
-        ],
+        ]
       },
-        provinceList: [],
+      provinceList: [],
       cityList: [],
       regionList: [],
       order_status_list: [
@@ -492,57 +491,68 @@ export default {
         count: 0
       },
       cur_item: {},
-      list1:[],
-      title:"",
-      select:"order_num",
-      last_select:"order_num",
+      list1: [],
+      title: "",
+      select: "order_num",
+      last_select: "order_num",
       multipleSelection: [], //选中的行数据
       isShowBatch: false, //是否显示批量操作
+      schoolList: [] //学校列表
     };
   },
   methods: {
+    //获取学校列表
+    getSchoolList() {
+      this.$q({
+        url: "/bg_admin/bg_management/get_school"
+      }).then(res => {
+        this.schoolList = res;
+      });
+    },
     handleSelectionChange(val) {
       this.multipleSelection = val;
     },
-    select_item(val){
-        this.queryParams[this.last_select] = '';
-        this.last_select =val;
+    select_item(val) {
+      this.queryParams[this.last_select] = "";
+      this.last_select = val;
     },
-       jump_fabric(row){
-            this.$router.push(
-                { path: '/fabricInfo', query: {id:this.cur_item.id,gid:row.goods_id} }
-            )
-        },
-        jump_per(row){
-            this.$router.push(
-                { path: '/personalityInfo', query: {id:this.cur_item.id,gid:row.goods_id} }
-            )
-        },
-      fetchProvince() {
-          this.$q({
-              url:'/bg_admin/index/getAreaList?=440300',
-          }).then(res=>{
-                this.provinceList = res;
-          })
+    jump_fabric(row) {
+      this.$router.push({
+        path: "/fabricInfo",
+        query: { id: this.cur_item.id, gid: row.goods_id }
+      });
+    },
+    jump_per(row) {
+      this.$router.push({
+        path: "/personalityInfo",
+        query: { id: this.cur_item.id, gid: row.goods_id }
+      });
+    },
+    fetchProvince() {
+      this.$q({
+        url: "/bg_admin/index/getAreaList?=440300"
+      }).then(res => {
+        this.provinceList = res;
+      });
     },
     fetchCity(area_code) {
-         this.$q({
-              url:'/bg_admin/index/getAreaList?=440300',
-              params:{ parent_area_code: area_code}
-          }).then(res=>{
-                this.cityList =res;
-          })
+      this.$q({
+        url: "/bg_admin/index/getAreaList?=440300",
+        params: { parent_area_code: area_code }
+      }).then(res => {
+        this.cityList = res;
+      });
     },
     fetchRegion(area_code) {
-         this.$q({
-              url:'/bg_admin/index/getAreaList?=440300',
-              params:{ parent_area_code: area_code}
-          }).then(res=>{
-                 this.regionList = res;
-          })
+      this.$q({
+        url: "/bg_admin/index/getAreaList?=440300",
+        params: { parent_area_code: area_code }
+      }).then(res => {
+        this.regionList = res;
+      });
     },
     fetchDistrict(area_code) {
-    //   this.area.customer_district = this.areaMap(area_code, this.regionList);
+      //   this.area.customer_district = this.areaMap(area_code, this.regionList);
     },
     areaMap(area_code, array) {
       for (var i = 0; i < array.length; i++) {
@@ -550,49 +560,49 @@ export default {
         if (area_code == element.area_code) return element.area_name;
       }
     },
-      modifyRecipientInfo(row){
-          this.cur_item = row;
-          this.form3.name =  row.recipient_name;
-          this.form3.mobilephone =  row.recipient_mobilephone;
-          this.form3.province_code =  row.recipient_province_code;
-          this.form3.city_code =  row.recipient_city_code;
-          this.form3.district_code=  row.recipient_district_code;
-          this.form3.address =  row.recipient_address;
-          this.fetchCity(row.recipient_province_code);
-          this.fetchRegion(row.recipient_city_code);
-        this.show3 = true;
-      },
-       send(row){
-           this.title = 0;
-           this.$q({
-               method:"post",
-               url:"/bg_admin/order/getRecipientInfo",
-               data:{id:row.id}
-           }).then(res=>{
-                this.cur_item = res;
-               this.show2 = true;
-           })
-       },    
-       modifyExpress(row){
-           this.title = 1;
-           this.$q({
-               method:"post",
-               url:"/bg_admin/order/getRecipientInfo",
-               data:{id:row.id}
-           }).then(res=>{
-               this.form2.express_id = res.express_id;
-               this.form2.express_num = res.express_num;
-                this.cur_item = res;
-               this.show2 = true;
-           })
-       },    
-      getExpressCompanies(){
-          this.$q({
-              url:"/bg_admin/bg_management/manageExpress",
-          }).then(res=>{
-                this.list1 = res.list;
-          })
-      },
+    modifyRecipientInfo(row) {
+      this.cur_item = row;
+      this.form3.name = row.recipient_name;
+      this.form3.mobilephone = row.recipient_mobilephone;
+      this.form3.province_code = row.recipient_province_code;
+      this.form3.city_code = row.recipient_city_code;
+      this.form3.district_code = row.recipient_district_code;
+      this.form3.address = row.recipient_address;
+      this.fetchCity(row.recipient_province_code);
+      this.fetchRegion(row.recipient_city_code);
+      this.show3 = true;
+    },
+    send(row) {
+      this.title = 0;
+      this.$q({
+        method: "post",
+        url: "/bg_admin/order/getRecipientInfo",
+        data: { id: row.id }
+      }).then(res => {
+        this.cur_item = res;
+        this.show2 = true;
+      });
+    },
+    modifyExpress(row) {
+      this.title = 1;
+      this.$q({
+        method: "post",
+        url: "/bg_admin/order/getRecipientInfo",
+        data: { id: row.id }
+      }).then(res => {
+        this.form2.express_id = res.express_id;
+        this.form2.express_num = res.express_num;
+        this.cur_item = res;
+        this.show2 = true;
+      });
+    },
+    getExpressCompanies() {
+      this.$q({
+        url: "/bg_admin/bg_management/manageExpress"
+      }).then(res => {
+        this.list1 = res.list;
+      });
+    },
     edit_price(item) {
       this.cur_item = item;
       this.form1.payment_amount = this.cur_item.payment_amount;
@@ -606,7 +616,7 @@ export default {
       this.nikeList = this.nikeList.splice(index, 1);
     },
     check(row) {
-      this.$router.push({ path: "/orderInfo",query:{id:row.id} });
+      this.$router.push({ path: "/orderInfo", query: { id: row.id } });
     },
     query_submit() {
       this.queryParams.page = 1;
@@ -617,15 +627,15 @@ export default {
       this.queryParams.page = 1;
       this.query();
       var that = this;
-      setTimeout(function(){
+      setTimeout(function() {
         that.isShowBatch = false;
-        if(that.queryParams.order_status_id==2){
+        if (that.queryParams.order_status_id == 2) {
           that.isShowBatch = true;
         }
-      },200)
+      }, 200);
     },
     order_status_query1(value) {
-      this.queryParams.size_status_id	 = value;
+      this.queryParams.size_status_id = value;
       this.queryParams.page = 1;
       this.query();
     },
@@ -642,70 +652,73 @@ export default {
     },
     submit() {
       this.form.id = this.cur_item.id;
-        this.post(
-            'form',
-            '/bg_admin/order/cancelOrder',
-            this.form,
-            'show'
-            )
+      this.post("form", "/bg_admin/order/cancelOrder", this.form, "show");
     },
     submit1() {
-        this.form1.id = this.cur_item.id;
-    this.$confirm("确定要修改该商品需付金额吗？", "提示", {
+      this.form1.id = this.cur_item.id;
+      this.$confirm("确定要修改该商品需付金额吗？", "提示", {
         type: "warning"
       }).then(() => {
-       this.post(
-            'form1',
-            '/bg_admin/order/modifyOrderPayment',
-            this.form1,
-            'show1'
-            )
+        this.post(
+          "form1",
+          "/bg_admin/order/modifyOrderPayment",
+          this.form1,
+          "show1"
+        );
       });
-      
     },
     submit2() {
-        var url='/bg_admin/order/sendGoods';
-        if(this.title){
-            url="/bg_admin/order/modifyExpress"
-        } 
-        this.form2.id = this.cur_item.id;
-        this.post(
-            'form2',
-            url,
-            this.form2,
-            'show2'
-            )
+      var url = "/bg_admin/order/sendGoods";
+      if (this.title) {
+        url = "/bg_admin/order/modifyExpress";
+      }
+      this.form2.id = this.cur_item.id;
+      this.post("form2", url, this.form2, "show2");
     },
     submit3() {
-        this.form3.id = this.cur_item.id;
-         this.$confirm("确定要修改该订单收货地址吗？", "提示", {
+      this.form3.id = this.cur_item.id;
+      this.$confirm("确定要修改该订单收货地址吗？", "提示", {
         type: "warning"
       }).then(() => {
-       this.post(
-            'form3',
-            '/bg_admin/order/modifyRecipientInfo',
-            this.form3,
-            'show3'
-            )
+        this.post(
+          "form3",
+          "/bg_admin/order/modifyRecipientInfo",
+          this.form3,
+          "show3"
+        );
       });
-        
     },
     cancel(row) {
-        this.cur_item = row;
-        this.show =true;
+      this.cur_item = row;
+      this.show = true;
     },
     confirm(row) {
       this.$confirm("确定该订单确定可生产？", "提示", {
         type: "warning"
       }).then(() => {
         this.$q({
-            url:"/bg_admin/order/confirmOrder",
-            method:"post",
-            data:{ id: row.id}
+          url: "/bg_admin/order/confirmOrder",
+          method: "post",
+          data: { id: row.id }
         }).then(res => {
-          this.$message.success('操作成功');
-            this.query();
+          this.$message.success("操作成功");
+          this.query();
         });
+      });
+    },
+    //批量审核
+    batchAudit() {
+      console.log(this.multipleSelection);
+      var ids = this.multipleSelection.map(item => {
+        return item.id;
+      });
+      this.$q({
+        url: "/bg_admin/order/batchConfirmOrders",
+        method: "post",
+        data: { ids: ids }
+      }).then(res => {
+        this.$message.success("操作成功");
+        this.query();
       });
     },
     editShow(row) {
@@ -718,6 +731,7 @@ export default {
     this.query();
     this.getExpressCompanies();
     this.fetchProvince();
+    this.getSchoolList();
   }
 };
 </script>
@@ -737,22 +751,22 @@ export default {
     display: flex;
     justify-content: space-between;
   }
-    .goods {
+  .goods {
     display: flex;
     align-items: center;
     img {
       margin-right: 15px;
     }
-       .name {
+    .name {
       margin-bottom: 20px;
       text-align: left;
       width: 160px;
       overflow: hidden;
-      text-overflow:ellipsis; 
-    white-space: nowrap;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
-    .price{
-        text-align: left;
+    .price {
+      text-align: left;
     }
   }
 }

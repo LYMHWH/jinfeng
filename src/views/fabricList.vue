@@ -59,12 +59,14 @@
       >
         <el-table-column type="index" width="50"></el-table-column>
 
-        <el-table-column prop="fabric_num" label="面料号"></el-table-column>
+        <el-table-column prop="fabric_num" label="面料编号"></el-table-column>
+        <el-table-column prop="fabric_variety" label="面料品种"></el-table-column>
+        <el-table-column prop="fabric_name" label="面料名称"></el-table-column>
         <el-table-column prop="分类" label="分类" show-overflow-tooltip></el-table-column>
         <el-table-column prop="系列" label="系列" show-overflow-tooltip></el-table-column>
         <el-table-column prop="档次" label="面料档次" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="属性" label="属性" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="花型" label="花色" show-overflow-tooltip></el-table-column>
+        <!-- <el-table-column prop="属性" label="属性" show-overflow-tooltip></el-table-column> -->
+        <!-- <el-table-column prop="花型" label="花色" show-overflow-tooltip></el-table-column> -->
         <el-table-column prop="颜色" label="颜色" show-overflow-tooltip></el-table-column>
         <el-table-column prop="成分" label="成分" show-overflow-tooltip></el-table-column>
         <el-table-column prop="yarn_count" label="纱支" show-overflow-tooltip></el-table-column>
@@ -180,30 +182,37 @@ export default {
       nikeList: [],
       nikeName: null,
       tableData: {},
-      keyword:""
+      keyword: ""
     };
   },
   methods: {
-      querySearchAsync(queryString, cb){
-        queryString&&this.$q({
-          url:"/bg_admin/fabric/getFabricNums",
-          params:{
-              keyword:queryString
+    querySearchAsync(queryString, cb) {
+      queryString &&
+        this.$q({
+          url: "/bg_admin/fabric/getFabricNums",
+          params: {
+            keyword: queryString
           }
-        }).then(res=>{
-          res = res.map(v=>{return {"value":v}})
+        }).then(res => {
+          res = res.map(v => {
+            return { value: v };
+          });
           cb(res);
-        })
-      },    
-      handleSelect(item){
-        this.queryParams.fabric_num = item.value;
-        this.queryParams.page = 1;
-        this.query();
-      },
-      del(row) {
-      this.delete("确定要删除吗？删除后，相关的商品需重新编辑上架！", "/bg_admin/fabric/deleteFabric", {
-        id: row.id
-      });
+        });
+    },
+    handleSelect(item) {
+      this.queryParams.fabric_num = item.value;
+      this.queryParams.page = 1;
+      this.query();
+    },
+    del(row) {
+      this.delete(
+        "确定要删除吗？删除后，相关的商品需重新编辑上架！",
+        "/bg_admin/fabric/deleteFabric",
+        {
+          id: row.id
+        }
+      );
     },
     check_fabric_photos(row) {
       var arr = JSON.parse(row.fabric_photos);
@@ -230,17 +239,20 @@ export default {
       var data = { id: row.id, status_id: 1 };
       if (row.status_id === 1) {
         data.status_id = 0;
-         this.toggle("确定要停用吗？停用后相关的商品需重新编辑上架！", "/bg_admin/fabric/setFabricStatus", data);
-      }else{
+        this.toggle(
+          "确定要停用吗？停用后相关的商品需重新编辑上架！",
+          "/bg_admin/fabric/setFabricStatus",
+          data
+        );
+      } else {
         this.$q({
-            method: "post",
-            url: "/bg_admin/fabric/setFabricStatus",
-            data
+          method: "post",
+          url: "/bg_admin/fabric/setFabricStatus",
+          data
         }).then(res => {
-            this.$message.success("操作成功");
-            this.query();
+          this.$message.success("操作成功");
+          this.query();
         });
-          
       }
     },
     addNike() {
@@ -254,9 +266,9 @@ export default {
       this.$router.push({ path: "/editFabric", query: { id: row.id } });
     },
     query_submit() {
-        this.queryParams.fabric_num = this.keyword;
-        this.queryParams.page = 1;
-        this.query();
+      this.queryParams.fabric_num = this.keyword;
+      this.queryParams.page = 1;
+      this.query();
     },
     order_status_query(value) {
       this.queryParams.status_id = value;
@@ -369,10 +381,10 @@ export default {
       }).then(res => {
         if (Array.isArray(res)) {
           res.map(item => {
-            if(item.item_name == '分类') {
+            if (item.item_name == "分类") {
               this.order_status_list1 = item.item_values;
             }
-          })
+          });
           // this.order_status_list1 = res[0].item_values;
         } else {
           this.order_status_list1 = [];
@@ -382,7 +394,7 @@ export default {
   },
   created() {
     this.query();
-    this.getFabricItems()
+    this.getFabricItems();
   },
   mounted() {}
 };
