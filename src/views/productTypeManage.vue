@@ -21,8 +21,8 @@
           </el-form>
         </div>
         <div style="border: 1px solid #ccc;height:700px;width:300px;padding:10px 0;">
-          <div v-for="(item, index) in tableData" :class="{'productItem':true,'active':index === index1}" @click="selectItem(index)">
-            <div>{{index+1}}、{{item.name}}</div>
+          <div v-for="(item, index) in tableData" :class="{'productItem':true,'active':index === index1}" @click="selectItem(item,index)">
+            <div>{{index+1}}.&nbsp;&nbsp;{{item.name}}</div>
             <div>{{item.code}}</div>
           </div>
         </div>
@@ -34,7 +34,7 @@
               <el-button v-if="!isShowEdit" @click="save">保存</el-button>
             </el-form-item>
             <el-form-item>
-              <el-button @click="isShowEdit=false">编辑</el-button>
+              <el-button v-if="isShowEdit" @click="isShowEdit=false">编辑</el-button>
             </el-form-item>
             <el-form-item>
               <el-button v-if="!isShowEdit" @click="cancel">取消</el-button>
@@ -43,18 +43,18 @@
         </div>
         <div>
           <el-checkbox-group  v-model="checkList">
-            <el-checkbox v-for="(v,i) in sizeList" :label="v.item_id" :key="i">{{v.item_name}}</el-checkbox>
+            <el-checkbox :disabled="isShowEdit" v-for="(v,i) in sizeList" :label="v.item_id" :key="i">{{v.item_name}}</el-checkbox>
           </el-checkbox-group>
         </div>
       </div>
     </div>
-    <el-dialog :title="title?'编辑':'添加'" :visible.sync="show">
+    <el-dialog :title="title?'编辑':'添加'" :visible.sync="show" width="500px">
       <el-form :model="form" :rules="formRules" ref="form" label-width="100px">
         <el-form-item label="产品类型：" prop="name">
-          <el-input style="width:300px;" v-model="form.product_type" placeholder="请输入产品类型"></el-input>
+          <el-input style="width:300px;" v-model="form.name" placeholder="请输入产品类型"></el-input>
         </el-form-item>
         <el-form-item label="产品编码：" prop="name">
-          <el-input style="width:300px;" v-model="form.product_code" placeholder="请输入产品编码"></el-input>
+          <el-input style="width:300px;" v-model="form.code" placeholder="请输入产品编码"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -78,20 +78,20 @@ export default {
     return {
       show: false,
       title: 0,
-      isShowEdit: false, //是否显示字段编辑按钮
+      isShowEdit: true, //是否显示字段编辑按钮
       formRules: {
-        product_type: [
+        name: [
           { required: true, message: "请输入学校名", trigger: "blur" }
         ],
-        product_code: [
+        code: [
           { required: true, message: "请输入产品编码", trigger: "blur" }
         ],
       },
       form: {
-        product_type: "",
-        product_code:"",
+        name: "",
+        code:"",
       },
-      tableData:[{id:1,name: '上衣',code:'123'},{id:1,name: '裤子',code:'3214'},{id:1,name: '下衣',code:'asdf'}],
+      tableData:[],
       index1: 0, //选中的产品类型下标
       checkList: [], //选中的尺码字段
       sizeList: [], //尺码字段
@@ -104,10 +104,12 @@ export default {
     },
     query() {
       this.$q({
-        url: "/bg_admin/bg_management/school_list",
+        url: "/bg_admin/product_category/manageProductCates",
         params: this.queryParams
       }).then(res => {
         this.tableData = res;
+        this.checkList = this.tableData[this.index1].item_ids;
+        this.form1.id = this.tableData[this.index1].id;
       });
     },
     getSizeItems(){
@@ -117,49 +119,67 @@ export default {
         this.sizeList=res;
       })
     },
-    selectItem(index){
+    selectItem(data,index){
       this.index1 = index;
+      this.checkList = data.item_ids;
+      this.form1 = {
+        id: data.id,
+        item_ids: []
+      }
     },
     add() {
       this.clean(this.form);
-    //   this.form.item_id = this.item_id;
       this.title = 0;
       this.show = true;
     },
     del(row) {
+      if(!this.form1.id){
+        this.$message.error("请选择产品类型！");
+        return
+      }
       this.delete(
         "确定要删除吗？",
-        "/bg_admin/bg_management/del_school",
-        { id: row.id }
+        "/bg_admin/product_category/deleteProductCate",
+        { id: this.form1.id }
       );
     },
-    edit(row) {
+    edit() {
+      var row = this.tableData[this.index1];
       this.title = 1;
       this.form.id = row.id;
       this.form.name = row.name;
-      this.form.province_code = String(row.province_code);
-      this.form.city_code = String(row.city_code);
-      this.form.district_code = String(row.district_code);
-      this.form.remark = row.remark;
-      this.fetchCity(row.province_code);
-      this.fetchRegion(row.city_code);
+      this.form.code = row.code;
       this.show = true;
     },
     //保存字段
     save(){
-
+      this.form1.item_ids = this.checkList;
+      this.$q({
+        method: "post",
+        url: "/bg_admin/product_category/setProductCateItems",
+        data: this.form1
+      }).then(res => {
+        this.$message.success("操作成功");
+        this.isShowEdit = true;
+        this.query();
+      });
     },
     //取消
     cancel(){
-
+      this.query();
+      this.isShowEdit = true;
     },
     submit(){
-
+      var url = "/bg_admin/product_category/addProductCate";
+      if (this.title) {
+        url = "/bg_admin/product_category/editProductCate";
+      }
+      this.post("form", url, this.form, "show");
     }
   },
 
   created() {
-    // this.query();
+    this.query();
     this.getSizeItems();
   }
 };
