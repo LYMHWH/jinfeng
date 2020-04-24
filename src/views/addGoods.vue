@@ -7,6 +7,13 @@
         <div class="btns">
             <el-form :model="form" ref="form"  :inline="true" label-width="130px" :rules="form_rule">
                 <div class="info-container">
+                    <div style="float:right;margin-right:200px;">
+                      <el-form-item label="包含产品类型：" prop="product_cate_ids">
+                        <el-checkbox-group  v-model="form.product_cate_ids">
+                          <el-checkbox v-for="(v,i) in productTypeList" :label="v.id" :key="i">{{v.name}}</el-checkbox>
+                        </el-checkbox-group>
+                      </el-form-item>
+                    </div>
                     <div style="width:1200px;">
                         <div>
                             <el-form-item label="商品类目："  prop="first_cate_id">
@@ -208,20 +215,24 @@ export default {
         sub_title: "",
         style_num: "",
         fabric_ids: [],
-        grades: [{price:'',sale_price:''}],
+        grades: [{ price: "", sale_price: "" }],
         personal_ids: [],
         images: [],
         desc: [],
         attrs: [],
-        old_price:"",
-        price:"",
-        tt:1,
-        tid:0,
-        size_template_id:'',
+        old_price: "",
+        price: "",
+        tt: 1,
+        tid: 0,
+        size_template_id: "",
+        product_cate_ids: [] //包含产品类型
         //   freight:'',
       },
       id: "",
       form_rule: {
+        product_cate_ids: [
+          { required: true, message: "请选择产品类型", trigger: "change" }
+        ],
         first_cate_id: [
           { required: true, message: "请选择商品类目", trigger: "change" }
         ],
@@ -302,7 +313,8 @@ export default {
         color: 0,
         pattern: 0
       },
-      radio2: ""
+      radio2: "",
+      productTypeList: []
     };
   },
   watch: {
@@ -335,29 +347,35 @@ export default {
     }
   },
   methods: {
-      
-      getSizeTemplates(){
-          this.$q({
-              url:'/bg_admin/goods/getSizeTemplates'
-          }).then(res=>{
-              this.list8 =res;
-          })
-      },
-      tt_change(val){
-        if(val ===1){
-            this.form.tid = 0
-        }else{
-             this.form.tid = '';
-        }
-      },
-      getTemplates(){
-          this.$q({
-              url:"/bg_admin/goods/getTemplates"
-          }).then(res=>{
-              this.list7 = res;
-          })
-      },
-      
+    getProductCates() {
+      this.$q({
+        url: "/bg_admin/product_category/getProductCates"
+      }).then(res => {
+        this.productTypeList = res;
+      });
+    },
+    getSizeTemplates() {
+      this.$q({
+        url: "/bg_admin/goods/getSizeTemplates"
+      }).then(res => {
+        this.list8 = res;
+      });
+    },
+    tt_change(val) {
+      if (val === 1) {
+        this.form.tid = 0;
+      } else {
+        this.form.tid = "";
+      }
+    },
+    getTemplates() {
+      this.$q({
+        url: "/bg_admin/goods/getTemplates"
+      }).then(res => {
+        this.list7 = res;
+      });
+    },
+
     process_fabrics_data(res) {
       var obj = {};
       var arr = res.fabrics.map(v => {
@@ -377,17 +395,17 @@ export default {
         }
       });
       this.checkList2 = obj;
-    //   for (const key in obj) {
-    //     if (obj.hasOwnProperty(key)) {
-    //       const element = obj[key];
-    //       this.form.grades.push({
-    //         title: key,
-    //         grade_id: element[0].grade_id,
-    //         sale_price: element[0].sale_price,
-    //         price: element[0].price
-    //       });
-    //     }
-    //   }
+      //   for (const key in obj) {
+      //     if (obj.hasOwnProperty(key)) {
+      //       const element = obj[key];
+      //       this.form.grades.push({
+      //         title: key,
+      //         grade_id: element[0].grade_id,
+      //         sale_price: element[0].sale_price,
+      //         price: element[0].price
+      //       });
+      //     }
+      //   }
     },
     submit1() {
       var obj = {};
@@ -410,18 +428,18 @@ export default {
         }
       });
       this.checkList2 = obj;
-        // this.form.grades=[];
-    //   for (const key in obj) {
-    //     if (obj.hasOwnProperty(key)) {
-    //       const element = obj[key];
-    //         this.form.grades.push({
-    //           title: key,
-    //           grade_id: element[0].grade_id,
-    //           sale_price: "",
-    //           price: ""
-    //         });
-    //     }
-    //   }
+      // this.form.grades=[];
+      //   for (const key in obj) {
+      //     if (obj.hasOwnProperty(key)) {
+      //       const element = obj[key];
+      //         this.form.grades.push({
+      //           title: key,
+      //           grade_id: element[0].grade_id,
+      //           sale_price: "",
+      //           price: ""
+      //         });
+      //     }
+      //   }
       this.show = false;
     },
     handleClose() {
@@ -515,6 +533,7 @@ export default {
       data.images = data.images;
       data.desc = data.desc;
       data.attrs = this.list6;
+      data.product_cate_ids = data.product_cate_ids;
       return data;
     },
     validateField(item) {
@@ -528,31 +547,31 @@ export default {
         });
       });
     },
-    add1(){
-         Promise.all([
+    add1() {
+      Promise.all([
         this.validateField("first_cate_id"),
         this.validateField("cate_id"),
         this.validateField("main_title")
       ])
         .then((r, j) => {
-              this.$confirm('是否暂存商品信息？', "提示", {
-                type: "warning"
-            }).then(() => {
-                var data = this.process_data();
-                this.$q({
-                    url: "/bg_admin/goods/tmpSaveGoods",
-                    data,
-                    method: "post"
-                }).then(res => {
-                    this.$message.success("操作成功");
-                    setTimeout(() => {
-                    this.$router.push({ path: "/addFreight" });
-                    }, 2000);
-                });
+          this.$confirm("是否暂存商品信息？", "提示", {
+            type: "warning"
+          }).then(() => {
+            var data = this.process_data();
+            this.$q({
+              url: "/bg_admin/goods/tmpSaveGoods",
+              data,
+              method: "post"
+            }).then(res => {
+              this.$message.success("操作成功");
+              setTimeout(() => {
+                this.$router.push({ path: "/addFreight" });
+              }, 2000);
             });
+          });
         })
         .catch(err => {
-          this.$message.error('请先选择商品类目和商品标题')
+          this.$message.error("请先选择商品类目和商品标题");
         });
     },
     staging() {
@@ -562,25 +581,24 @@ export default {
         this.validateField("main_title")
       ])
         .then((r, j) => {
-              this.$confirm('是否暂存商品信息？', "提示", {
-                type: "warning"
-            }).then(() => {
-                var data = this.process_data();
-                this.$q({
-                    url: "/bg_admin/goods/tmpSaveGoods",
-                    data,
-                    method: "post"
-                }).then(res => {
-                    this.$message.success("操作成功");
-                    setTimeout(() => {
-                    this.$router.push({ path: "/goodsList" });
-                    }, 2000);
-                });
+          this.$confirm("是否暂存商品信息？", "提示", {
+            type: "warning"
+          }).then(() => {
+            var data = this.process_data();
+            this.$q({
+              url: "/bg_admin/goods/tmpSaveGoods",
+              data,
+              method: "post"
+            }).then(res => {
+              this.$message.success("操作成功");
+              setTimeout(() => {
+                this.$router.push({ path: "/goodsList" });
+              }, 2000);
             });
-        
+          });
         })
         .catch(err => {
-          this.$message.error('请先选择商品类目和商品标题')
+          this.$message.error("请先选择商品类目和商品标题");
         });
     },
     submit() {
@@ -596,12 +614,12 @@ export default {
               this.$message.error("请填写售价");
               document.querySelector(`#grade${index}`).focus();
               return;
-            }else{
-                if(element.price && (element.price*1 < element.sale_price*1)){
-                    this.$message.error("售价必须小于原价");
-                    document.querySelector(`#grade${index}`).focus();
-                      return;
-                }
+            } else {
+              if (element.price && element.price * 1 < element.sale_price * 1) {
+                this.$message.error("售价必须小于原价");
+                document.querySelector(`#grade${index}`).focus();
+                return;
+              }
             }
           }
 
@@ -693,7 +711,8 @@ export default {
     this.getPersonalization();
     this.getCates(0);
     this.getTemplates();
-    this.getSizeTemplates()
+    this.getSizeTemplates();
+    this.getProductCates();
     // this.query();
   }
 };

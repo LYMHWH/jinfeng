@@ -7,7 +7,7 @@
     <div class="btns">
       <el-form :model="queryParams" :inline="true">
         <el-form-item label="" v-if="isShowBatch">
-          <!-- <el-button type="primary" @click="cancel">批量审核不通过</el-button> -->
+          <el-button type="primary" @click="batchAuditRejection">批量审核不通过</el-button>
           <el-button type="primary" @click="batchAudit">批量审核通过</el-button>
         </el-form-item>
         <el-form-item label="订单状态：">
@@ -41,7 +41,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="学校：">
-          <el-select placeholder="请选择" @change="order_status_query1" v-model="queryParams.size_status_id	">
+          <el-select placeholder="请选择" @change="order_status_query" v-model="queryParams.school_id">
             <el-option label="全部" :value="0"></el-option>
             <el-option :label="item.name" :value="item.id" v-for="item in schoolList" :key="item.id"></el-option>
           </el-select>
@@ -296,6 +296,21 @@
         <el-button type="primary" @click="submit">确定不可生产</el-button>
       </div>
     </el-dialog>
+    <!-- 批量不可生产 -->
+    <el-dialog title="确认不可生产" :visible.sync="isShowBatchReject">
+      <el-form :model="formRules4" :rules="formRules4" ref="form4" label-width="70px">
+        <el-form-item label="原因：" prop="remark">
+          <el-input type="textarea" v-model="form4.remark" placeholder="请输入原因"></el-input>
+          <div>
+            <i class="el-icon-info red"></i> 确认不可生产，订单将自动取消；
+          </div>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="isShowBatchReject = false">取 消</el-button>
+        <el-button type="primary" @click="submit4">确定不可生产</el-button>
+      </div>
+    </el-dialog>
     <el-dialog title="修改收货地址" :visible.sync="show3" width="750px">
       <el-form :model="form3" :rules="formRules3" ref="form3" label-width="100px" >
         <el-form-item label="收货人：" prop="name">
@@ -422,13 +437,17 @@ export default {
         express_id: "",
         express_num: ""
       },
+      form4: {
+        ids: "",
+        remark: ""
+      },
       formLabelWidth: "70px",
       queryParams: {
         size: 10,
         page: 1,
         order_status_id: 0,
         size_status_id: 0,
-        // order_num: "",
+        school_id: "",
         // fabric_num: "",
         skey: ""
       },
@@ -468,6 +487,9 @@ export default {
           { required: true, message: "请输入详细地址", trigger: "blur" }
         ]
       },
+      formRules4: {
+        remark: [{ required: true, message: "请输入原因", trigger: "blur" }]
+      },
       provinceList: [],
       cityList: [],
       regionList: [],
@@ -497,6 +519,7 @@ export default {
       last_select: "order_num",
       multipleSelection: [], //选中的行数据
       isShowBatch: false, //是否显示批量操作
+      isShowBatchReject: false, //批量审核拒绝
       schoolList: [] //学校列表
     };
   },
@@ -623,7 +646,7 @@ export default {
       this.query();
     },
     order_status_query(value) {
-      this.queryParams.order_status_id = value;
+      // this.queryParams.order_status_id = value;
       this.queryParams.page = 1;
       this.query();
       var that = this;
@@ -653,6 +676,17 @@ export default {
     submit() {
       this.form.id = this.cur_item.id;
       this.post("form", "/bg_admin/order/cancelOrder", this.form, "show");
+    },
+    submit4() {
+      this.form4.ids = this.multipleSelection.map(item => {
+        return item.id;
+      });
+      this.post(
+        "form4",
+        "/bg_admin/order/batchCancelOrders",
+        this.form4,
+        "isShowBatchReject"
+      );
     },
     submit1() {
       this.form1.id = this.cur_item.id;
@@ -691,6 +725,10 @@ export default {
     cancel(row) {
       this.cur_item = row;
       this.show = true;
+    },
+    batchAuditRejection() {
+      this.form4.remark = "";
+      this.isShowBatchReject = true;
     },
     confirm(row) {
       this.$confirm("确定该订单确定可生产？", "提示", {
