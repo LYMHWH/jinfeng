@@ -14,8 +14,7 @@
                     </el-tabs>
                 </el-form-item>
                 <el-form-item label="消息类型：">
-                  <el-select placeholder="请选择" @change="handleClick" v-model="queryParams.type">
-                    <el-option label="全部" :value="0"></el-option>
+                  <el-select placeholder="请选择" @change="handleClick" v-model="queryParams.type_id">
                     <el-option :label="item.name" :value="item.id" v-for="item in typeList" :key="item.id"></el-option>
                   </el-select>
                 </el-form-item>
@@ -38,7 +37,7 @@
                     </el-table-column>
                     <el-table-column
                     prop="title"
-                    label="消息标题"
+                    label="消息类型"
                     show-overflow-tooltip>
                     </el-table-column>
                     <el-table-column
@@ -128,7 +127,7 @@ export default {
     }
   },
   data() {
-          var now = new Date();
+    var now = new Date();
     var startDate = `${now.getFullYear()}-${now.getMonth() + 1}-01`;
     startDate = new Date(startDate);
     return {
@@ -157,8 +156,8 @@ export default {
       queryParams: {
         size: 10,
         page: 1,
-        status_id:'-1',
-        type: 0
+        status_id: "-1",
+        type_id: 0
       },
       formRules: {
         truename: [
@@ -188,34 +187,38 @@ export default {
         negative_count: 0,
         neutral_count: 0,
         positive_count: 0,
-        current_count: 0,
+        current_count: 0
       },
       activeName: 0,
       list: [],
       list1: [],
       date: [startDate, new Date()],
-      typeList: [
-        {id: 1, name: '催发货通知'},
-        {id: 2, name: '订单售后'},
-      ],
+      typeList: []
     };
   },
   methods: {
-    check(row) {
-      this.$router.push({ path: "/orderInfo",query:{id:row.order_id} });
+    getMessageTypes(val) {
+      this.$q({
+        url: "/bg_admin/bg_management/getMessageTypes"
+      }).then(res => {
+        this.typeList = res;
+      });
     },
-      jump_order_info(row){
-          this.$router.push({
-              path:"/orderInfo",
-              query:{id:row.order_id}
-          })
-      },
-      datePicker(date) {
+    check(row) {
+      this.$router.push({ path: "/orderInfo", query: { id: row.order_id } });
+    },
+    jump_order_info(row) {
+      this.$router.push({
+        path: "/orderInfo",
+        query: { id: row.order_id }
+      });
+    },
+    datePicker(date) {
       this.queryParams.stime = date[0];
       this.queryParams.etime = date[1];
     },
-     check_photos(row) {
-      var arr = row.photos.split('###');
+    check_photos(row) {
+      var arr = row.photos.split("###");
       arr.forEach((element, i) => {
         arr[i] = { href: element };
       });
@@ -254,7 +257,7 @@ export default {
       this.query();
     },
     handleClick(tab, event) {
-    //   this.queryParams.grade = this.activeName;
+      //   this.queryParams.grade = this.activeName;
       this.queryParams.page = 1;
       this.query();
     },
@@ -410,13 +413,14 @@ export default {
 
   created() {
     this.query();
+    this.getMessageTypes();
   },
   mounted() {}
 };
 </script>
 <style lang="scss">
 .tailor-evaluate-manage {
-    @import url("../../static/swipebox/css/swipebox.min.css");
+  @import url("../../static/swipebox/css/swipebox.min.css");
   .btns {
     margin-bottom: 20px;
   }
@@ -441,8 +445,8 @@ export default {
       margin-bottom: 20px;
       text-align: left;
     }
-    .price{
-        text-align: left;
+    .price {
+      text-align: left;
     }
   }
 }
