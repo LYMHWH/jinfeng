@@ -112,6 +112,13 @@
             <el-option :label="item.name" :value="item.id" v-for="item in school_list" :key="item.value"></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item v-if="form.wxapp_role_id == 2" label="资金托管：" prop="mobilephone">
+          <el-radio v-model="form.funds_trusteeship" :label="1">不托管</el-radio>
+          <el-radio v-model="form.funds_trusteeship" :label="2">托管</el-radio>
+        </el-form-item>
+        <el-form-item v-if="form.wxapp_role_id == 2" label="账户金额：">
+          <span v-model="form.account_balance"></span>
+        </el-form-item>
         <el-form-item v-if="form.wxapp_role_id == 3" label="班级：" prop="class_id">
           <el-select style="width:200px;" v-model="form.class_id">
             <el-option :label="item.name" :value="item.id" v-for="item in class_list" :key="item.value"></el-option>
@@ -135,7 +142,7 @@ import upImage from "@/components/Upload/upImage";
 export default {
   name: "classManage",
   mixins: [mixin],
-   components: {
+  components: {
     upImage: upImage
   },
   data() {
@@ -143,19 +150,14 @@ export default {
       show: false,
       title: 0,
       role_list: [
-        {label: '学校管理员', value: 2},
-        {label: '班主任', value: 3},
+        { label: "学校管理员", value: 2 },
+        { label: "班主任", value: 3 }
       ],
-      gender_list:[
-        {label: '男', value: 1},
-        {label: '女', value: 2},
-      ],
+      gender_list: [{ label: "男", value: 1 }, { label: "女", value: 2 }],
       school_list: [],
-      class_list:[],
+      class_list: [],
       formRules: {
-        nickname: [
-          { required: true, message: "请输入姓名", trigger: "blur" }
-        ],
+        nickname: [{ required: true, message: "请输入姓名", trigger: "blur" }],
         mobilephone: [
           { required: true, message: "请输入手机号", trigger: "change" }
         ],
@@ -165,18 +167,14 @@ export default {
         province_code: [
           { required: true, message: "请选择省", trigger: "change" }
         ],
-        city_code: [
-          { required: true, message: "请选择市", trigger: "change" }
-        ],
+        city_code: [{ required: true, message: "请选择市", trigger: "change" }],
         district_code: [
           { required: true, message: "请选择区", trigger: "change" }
         ],
         school_id: [
           { required: true, message: "请选择学校", trigger: "change" }
         ],
-        class_id: [
-          { required: true, message: "请选班级", trigger: "change" }
-        ],
+        class_id: [{ required: true, message: "请选班级", trigger: "change" }]
       },
       form: {
         nickname: "",
@@ -188,6 +186,7 @@ export default {
         province_code: "",
         city_code: "",
         district_code: "",
+        funds_trusteeship: 1
       },
       provinceList: [],
       cityList: [],
@@ -198,10 +197,10 @@ export default {
         size: 10,
         skey: ""
       },
-      tableData:{
+      tableData: {
         count: 0,
-        data:[]
-      },
+        data: []
+      }
     };
   },
   methods: {
@@ -233,6 +232,7 @@ export default {
     },
     add() {
       this.clean(this.form);
+      this.form.funds_trusteeship = 1;
       this.form.parent_id = this.$route.query.id;
       this.title = 0;
       this.show = true;
@@ -241,7 +241,7 @@ export default {
       this.delete(
         "您确认删除该账号？",
         "/bg_admin/bg_management/del_school_user",
-        { id: row.id}
+        { id: row.id }
       );
     },
     edit(row) {
@@ -258,8 +258,8 @@ export default {
       this.form.remark = row.remark;
       this.fetchCity(row.province_code);
       this.fetchRegion(row.city_code);
-      this.fetchDistrict()
-      this.getClass(row.school_id)
+      this.fetchDistrict();
+      this.getClass(row.school_id);
       this.show = true;
     },
     submit() {
@@ -271,62 +271,62 @@ export default {
     },
     fetchProvince() {
       this.$q({
-        url:'/bg_admin/index/getAreaList?=440300',
-      }).then(res=>{
+        url: "/bg_admin/index/getAreaList?=440300"
+      }).then(res => {
         this.provinceList = res;
-      })
+      });
     },
     fetchCity(area_code) {
       this.$q({
-        url:'/bg_admin/index/getAreaList?=440300',
-        params:{ parent_area_code: area_code}
-      }).then(res=>{
-        this.cityList =res;
-      })
+        url: "/bg_admin/index/getAreaList?=440300",
+        params: { parent_area_code: area_code }
+      }).then(res => {
+        this.cityList = res;
+      });
     },
     fetchRegion(area_code) {
       this.$q({
-        url:'/bg_admin/index/getAreaList?=440300',
-        params:{ parent_area_code: area_code}
-      }).then(res=>{
+        url: "/bg_admin/index/getAreaList?=440300",
+        params: { parent_area_code: area_code }
+      }).then(res => {
         this.regionList = res;
-      })
+      });
     },
     fetchDistrict(type) {
       var data = {
         province_code: this.form.province_code,
         city_code: this.form.city_code,
-        district_code: this.form.district_code,
-      }
+        district_code: this.form.district_code
+      };
       this.$q({
         url: "/bg_admin/bg_management/get_school_by_area",
         params: data
       }).then(res => {
-        if(type){
-          this.form.school_id = '';
-          this.form.class_id = '';
+        if (type) {
+          this.form.school_id = "";
+          this.form.class_id = "";
         }
         this.school_list = res.map(item => {
-          return{
+          return {
             id: item.id,
             name: item.name
-          }
-        })
+          };
+        });
       });
     },
     getClass(id) {
       this.$q({
         url: "/bg_admin/bg_management/get_class_by_school",
-        params: {school_id: id}
+        params: { school_id: id }
       }).then(res => {
         this.class_list = res.map(item => {
-          return{
+          return {
             id: item.id,
             name: item.name
-          }
-        })
+          };
+        });
       });
-    },
+    }
   },
 
   created() {
