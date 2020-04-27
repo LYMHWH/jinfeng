@@ -71,7 +71,7 @@ import upImage from "@/components/Upload/upImage";
 export default {
   name: "productTypeManage",
   mixins: [mixin],
-   components: {
+  components: {
     upImage: upImage
   },
   data() {
@@ -80,21 +80,21 @@ export default {
       title: 0,
       isShowEdit: true, //是否显示字段编辑按钮
       formRules: {
-        name: [
-          { required: true, message: "请输入学校名", trigger: "blur" }
-        ],
-        code: [
-          { required: true, message: "请输入产品编码", trigger: "blur" }
-        ],
+        name: [{ required: true, message: "请输入产品类型", trigger: "blur" }],
+        code: [{ required: true, message: "请输入产品编码", trigger: "blur" }]
       },
       form: {
         name: "",
-        code:"",
+        code: ""
       },
-      tableData:[],
+      form1: {
+        id: "",
+        item_ids: []
+      },
+      tableData: [],
       index1: 0, //选中的产品类型下标
       checkList: [], //选中的尺码字段
-      sizeList: [], //尺码字段
+      sizeList: [] //尺码字段
     };
   },
   methods: {
@@ -112,20 +112,20 @@ export default {
         this.form1.id = this.tableData[this.index1].id;
       });
     },
-    getSizeItems(){
+    getSizeItems() {
       this.$q({
-        url:'/bg_admin/size/getSizeItems'
-      }).then(res=>{
-        this.sizeList=res;
-      })
+        url: "/bg_admin/size/getSizeItems"
+      }).then(res => {
+        this.sizeList = res;
+      });
     },
-    selectItem(data,index){
+    selectItem(data, index) {
       this.index1 = index;
       this.checkList = data.item_ids;
       this.form1 = {
         id: data.id,
         item_ids: []
-      }
+      };
     },
     add() {
       this.clean(this.form);
@@ -133,9 +133,9 @@ export default {
       this.show = true;
     },
     del(row) {
-      if(!this.form1.id){
+      if (!this.form1.id) {
         this.$message.error("请选择产品类型！");
-        return
+        return;
       }
       this.delete(
         "确定要删除吗？",
@@ -152,7 +152,7 @@ export default {
       this.show = true;
     },
     //保存字段
-    save(){
+    save() {
       this.form1.item_ids = this.checkList;
       this.$q({
         method: "post",
@@ -165,11 +165,11 @@ export default {
       });
     },
     //取消
-    cancel(){
+    cancel() {
       this.query();
       this.isShowEdit = true;
     },
-    submit(){
+    submit() {
       var url = "/bg_admin/product_category/addProductCate";
       if (this.title) {
         url = "/bg_admin/product_category/editProductCate";
@@ -186,28 +186,28 @@ export default {
 </script>
 <style lang="scss">
 .productTypeManage {
-  .box{
+  .box {
     display: flex;
   }
-  .product{
+  .product {
     width: 400px;
   }
-  .size-field{
+  .size-field {
     flex: 1;
   }
-  .productItem{
-    display:flex;
+  .productItem {
+    display: flex;
     justify-content: space-between;
-    height:40px;
+    height: 40px;
     line-height: 40px;
     padding: 0 10px;
     overflow: auto;
   }
-  .active{
+  .active {
     background: #014691;
-    color:#fff;
+    color: #fff;
   }
-  .el-checkbox{
+  .el-checkbox {
     margin-left: 0;
     margin-right: 30px;
     margin-bottom: 10px;
