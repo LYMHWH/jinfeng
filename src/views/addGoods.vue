@@ -443,6 +443,7 @@ export default {
       this.show = false;
     },
     handleClose() {
+      this.checkList1 = JSON.parse(JSON.stringify(this.form.fabric_ids));
       this.show = false;
     },
     order_status_query() {},
