@@ -14,6 +14,12 @@
                         </el-form-item>
                     </div>
                     <div>
+                        <el-form-item label="编码：" prop="code">
+                            <el-input placeholder="请输入个性化工艺编码" v-model="form.code"></el-input>
+                        </el-form-item>
+                    </div>
+                    
+                    <div>
                         <el-form-item required label="内容：" prop="allow_content">
                             <el-radio-group v-model="form.allow_content">
                                 <el-radio :label="1">允许自定义内容</el-radio>
@@ -130,6 +136,7 @@ export default {
       image: "",
       form: {
         name: "",
+        code: "",
         allow_content: 1,
         // content:[],
         type_id: 1,
@@ -140,9 +147,10 @@ export default {
         name: [
           { required: true, message: "请输入个性化工艺名称", trigger: "blur" }
         ],
-        price: [
-          { required: true, message: "请输入价格", trigger: "blur" }
+        code: [
+          { required: true, message: "请输入个性化工艺编码", trigger: "blur" }
         ],
+        price: [{ required: true, message: "请输入价格", trigger: "blur" }],
         // content:[{type: "array",required:true,message: '请选择自定义内容方式', trigger: 'change'}],
         attrs: [
           {
@@ -171,7 +179,7 @@ export default {
       this.form[`photos${this.index}`].push({
         url: result.oks.file[0].file_url,
         name: "",
-        code: "",
+        code: ""
       });
     },
     beforeAvatarUpload(file) {
@@ -211,21 +219,22 @@ export default {
           photos: obj[`photos${v}`]
         });
       });
-        // if(obj.allow_content ==1){
-        //     data.is_text = 0; 
-        //     data.is_sign = 0; 
-        //     data.is_art = 0; 
-        //     obj.content.forEach(v=>{
-        //         data[v] = 1;
-        //     }) 
-        // }else{
-        //     data.is_text = 0; 
-        //     data.is_sign = 0; 
-        //     data.is_art = 0; 
-        // }
+      // if(obj.allow_content ==1){
+      //     data.is_text = 0;
+      //     data.is_sign = 0;
+      //     data.is_art = 0;
+      //     obj.content.forEach(v=>{
+      //         data[v] = 1;
+      //     })
+      // }else{
+      //     data.is_text = 0;
+      //     data.is_sign = 0;
+      //     data.is_art = 0;
+      // }
 
       data.id = this.id;
       data.name = obj.name;
+      data.code = obj.code;
       data.allow_content = obj.allow_content;
       // data.allow_more = obj.allow_more;
       data.price = obj.price;
@@ -257,10 +266,10 @@ export default {
     cancel1() {
       this.$router.push({ path: "/personalityList" });
     },
-    transfer_content(data){
-        data.is_text == 1&&this.form.content.push('is_text') ; 
-        data.is_sign == 1&&this.form.content.push('is_sign') ; 
-        data.is_art == 1&&this.form.content.push('is_art') ; 
+    transfer_content(data) {
+      data.is_text == 1 && this.form.content.push("is_text");
+      data.is_sign == 1 && this.form.content.push("is_sign");
+      data.is_art == 1 && this.form.content.push("is_art");
     },
     query() {
       this.$q({
@@ -275,9 +284,6 @@ export default {
           this.$set(this.form, `photos${v.item_name}`, v.photos);
         });
         //  this.transfer_content(res);
-
-         
-
       });
     }
   },

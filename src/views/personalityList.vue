@@ -40,6 +40,11 @@
                     >
                     </el-table-column>
                     <el-table-column
+                    prop="code"
+                    label="编码"
+                    >
+                    </el-table-column>
+                    <el-table-column
                     prop="price"
                     label="价格（元）"
                     show-overflow-tooltip>
@@ -152,9 +157,13 @@ export default {
   },
   methods: {
     del(row) {
-        this.delete("确定要删除吗？删除后，相关的商品需重新编辑上架！", "/bg_admin/personalization/deletePersonalization", {
-        id: row.id
-        });
+      this.delete(
+        "确定要删除吗？删除后，相关的商品需重新编辑上架！",
+        "/bg_admin/personalization/deletePersonalization",
+        {
+          id: row.id
+        }
+      );
     },
     check_fabric_photos(row) {
       var arr = JSON.parse(row.fabric_photos);
@@ -181,18 +190,21 @@ export default {
       var data = { id: row.id, status_id: 1 };
       if (row.status_id === 1) {
         data.status_id = 0;
-           this.toggle("确定要停用吗？停用后相关的商品需重新编辑上架！", "/bg_admin/personalization/setPersonalStatus", data);
-      }else{
-            this.$q({
-                method: "post",
-                url: "/bg_admin/personalization/setPersonalStatus",
-                data
-            }).then(res => {
-                this.$message.success("操作成功");
-                this.query();
-            });
+        this.toggle(
+          "确定要停用吗？停用后相关的商品需重新编辑上架！",
+          "/bg_admin/personalization/setPersonalStatus",
+          data
+        );
+      } else {
+        this.$q({
+          method: "post",
+          url: "/bg_admin/personalization/setPersonalStatus",
+          data
+        }).then(res => {
+          this.$message.success("操作成功");
+          this.query();
+        });
       }
-      
     },
     addNike() {
       this.nikeList.push(this.nikeName);
@@ -311,7 +323,7 @@ export default {
 </script>
 <style lang="scss">
 .tailor-personalityList-list {
-//   @import url("../../static/swipebox/css/swipebox.min.css");
+  //   @import url("../../static/swipebox/css/swipebox.min.css");
   .btns {
     margin-bottom: 20px;
   }

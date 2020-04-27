@@ -14,6 +14,11 @@
                         </el-form-item>
                     </div>
                     <div>
+                        <el-form-item label="编码：" prop="code">
+                            <el-input placeholder="请输入个性化工艺编码" v-model="form.code"></el-input>
+                        </el-form-item>
+                    </div>
+                    <div>
                         <el-form-item required label="内容：" prop="allow_content">
                             <el-radio-group v-model="form.allow_content">
                                 <el-radio :label="1">允许自定义内容</el-radio>
@@ -129,6 +134,7 @@ export default {
       image: "",
       form: {
         name: "",
+        code: "",
         allow_content: 1,
         // content:[],
         type_id: 1,
@@ -139,9 +145,10 @@ export default {
         name: [
           { required: true, message: "请输入个性化工艺名称", trigger: "blur" }
         ],
-        price: [
-          { required: true, message: "请输入价格", trigger: "blur" }
+        code: [
+          { required: true, message: "请输入个性化工艺编码", trigger: "blur" }
         ],
+        price: [{ required: true, message: "请输入价格", trigger: "blur" }],
         // content:[{type: "array",required:true,message: '请选择自定义内容方式', trigger: 'change'}],
         attrs: [
           {
@@ -169,7 +176,7 @@ export default {
       this.form[`photos${this.index}`].push({
         url: result.oks.file[0].file_url,
         name: "",
-        code: "",
+        code: ""
       });
     },
     beforeAvatarUpload(file) {
@@ -193,7 +200,7 @@ export default {
       this.$set(this.form, `photos${val}`, []);
       this.form.attrs.push(val);
       this.attr = "";
-      console.log(this.form)
+      console.log(this.form);
     },
     handleClose(index) {
       this.form.attrs.splice(index, 1);
@@ -211,19 +218,20 @@ export default {
         });
       });
       // if(obj.allow_content ==1){
-      //   data.is_text = 0; 
-      //    data.is_sign = 0; 
-      //    data.is_art = 0; 
+      //   data.is_text = 0;
+      //    data.is_sign = 0;
+      //    data.is_art = 0;
       //    obj.content.forEach(v=>{
       //        data[v] = 1;
-      //    }) 
+      //    })
       // }else{
-      //    data.is_text = 0; 
-      //    data.is_sign = 0; 
-      //    data.is_art = 0; 
+      //    data.is_text = 0;
+      //    data.is_sign = 0;
+      //    data.is_art = 0;
       // }
 
       data.name = obj.name;
+      data.code = obj.code;
       data.allow_content = obj.allow_content;
       // data.allow_more = obj.allow_more;
       data.price = obj.price;
@@ -252,9 +260,9 @@ export default {
         }
       });
     },
-     cancel1() {
+    cancel1() {
       this.$router.push({ path: "/personalityList" });
-    },
+    }
   }
 };
 </script>
@@ -311,10 +319,10 @@ export default {
       color: #fff;
     }
   }
-  .opt-setting{
-      .el-input__inner{
-          border-radius: 0;
-      }
+  .opt-setting {
+    .el-input__inner {
+      border-radius: 0;
+    }
   }
 }
 </style>
