@@ -112,13 +112,13 @@
             <el-option :label="item.name" :value="item.id" v-for="item in school_list" :key="item.value"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item v-if="form.wxapp_role_id == 2" label="资金托管：" prop="mobilephone">
-          <el-radio v-model="form.funds_trusteeship" :label="1">不托管</el-radio>
-          <el-radio v-model="form.funds_trusteeship" :label="2">托管</el-radio>
+        <!-- <el-form-item v-if="form.wxapp_role_id == 2" label="资金托管：" prop="mobilephone">
+          <el-radio v-model="form.is_trustee_amount" :label="0">不托管</el-radio>
+          <el-radio v-model="form.is_trustee_amount" :label="1">托管</el-radio>
         </el-form-item>
         <el-form-item v-if="form.wxapp_role_id == 2" label="账户金额：">
           <span v-model="form.account_balance"></span>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item v-if="form.wxapp_role_id == 3" label="班级：" prop="class_id">
           <el-select style="width:200px;" v-model="form.class_id">
             <el-option :label="item.name" :value="item.id" v-for="item in class_list" :key="item.value"></el-option>
@@ -186,7 +186,7 @@ export default {
         province_code: "",
         city_code: "",
         district_code: "",
-        funds_trusteeship: 1
+        is_trustee_amount: 0
       },
       provinceList: [],
       cityList: [],
@@ -232,7 +232,7 @@ export default {
     },
     add() {
       this.clean(this.form);
-      this.form.funds_trusteeship = 1;
+      this.form.is_trustee_amount = 0;
       this.form.parent_id = this.$route.query.id;
       this.title = 0;
       this.show = true;
@@ -255,6 +255,7 @@ export default {
       this.form.province_code = String(row.province_code);
       this.form.city_code = String(row.city_code);
       this.form.district_code = String(row.district_code);
+      this.form.is_trustee_amount = row.is_trustee_amount;
       this.form.remark = row.remark;
       this.fetchCity(row.province_code);
       this.fetchRegion(row.city_code);
