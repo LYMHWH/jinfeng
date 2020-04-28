@@ -101,7 +101,7 @@ import upImage from "@/components/Upload/upImage";
 export default {
   name: "parentAccountManage",
   mixins: [mixin],
-   components: {
+  components: {
     upImage: upImage
   },
   data() {
@@ -109,28 +109,26 @@ export default {
       show: false,
       title: 0,
       formRules: {
-        nickname: [
-          { required: true, message: "请输入姓名", trigger: "blur" }
-        ],
+        nickname: [{ required: true, message: "请输入姓名", trigger: "blur" }],
         mobilephone: [
           { required: true, message: "请输入手机号", trigger: "blur" }
-        ],
+        ]
       },
       form: {
         nickname: "",
         mobilephone: "",
-        remark: "",
+        remark: ""
       },
       formLabelWidth: "70px",
       queryParams: {
         size: 10,
         page: 1,
-        skey:"",
+        skey: ""
       },
-      tableData:{
+      tableData: {
         count: 0,
-        data:[]
-      },
+        data: []
+      }
     };
   },
   methods: {
@@ -166,30 +164,29 @@ export default {
       this.show = true;
     },
     del(row) {
-      this.delete(
-        "您确认删除该学生？",
-        "/bg_admin/bg_management/del_parent",
-        { id: row.id }
-      );
-    },
-    setBtn(row){
-      this.$confirm('您确认该身份设置为城市合伙人身份吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$q({
-          url: "/bg_admin/bg_management/set_city_user_role",
-          params: {id: row.id}
-        }).then(res => {
-          this.$message({
-            type: 'success',
-            message: '操作成功!'
-          });
-        });
-      }).catch(() => {
-                 
+      this.delete("您确认删除该学生？", "/bg_admin/bg_management/del_parent", {
+        id: row.id
       });
+    },
+    setBtn(row) {
+      this.$confirm("您确认该身份设置为城市合伙人身份吗？", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.$q({
+            url: "/bg_admin/bg_management/set_city_user_role",
+            params: { id: row.id }
+          }).then(res => {
+            this.$message({
+              type: "success",
+              message: "操作成功!"
+            });
+            this.query();
+          });
+        })
+        .catch(() => {});
     },
     edit(row) {
       this.title = 1;
@@ -214,7 +211,7 @@ export default {
       this.post("form", url, this.form, "show");
     },
     checkStudent(row) {
-      this.$router.push({ path: "/studentManage",query:{id:row.id} });
+      this.$router.push({ path: "/studentManage", query: { id: row.id } });
     }
   },
 
@@ -262,11 +259,11 @@ export default {
     height: 178px;
     display: block;
   }
-  input[type=number] {
+  input[type="number"] {
     -moz-appearance: textfield;
   }
-  input[type=number]::-webkit-inner-spin-button,
-  input[type=number]::-webkit-outer-spin-button {
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
   }

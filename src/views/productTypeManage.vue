@@ -212,6 +212,10 @@ export default {
     margin-right: 30px;
     margin-bottom: 10px;
   }
+  .el-checkbox__input.is-disabled.is-checked .el-checkbox__inner {
+    background-color: #014691;
+    border-color: #dcdfe6;
+  }
 }
 </style>
 
