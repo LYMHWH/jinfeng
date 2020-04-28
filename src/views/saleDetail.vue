@@ -22,13 +22,13 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="地址：" >
-                     <el-select v-model="queryParams.province_code" placeholder="省" @change="fetchCity">
+                     <el-select v-model="queryParams.province_code" clearable placeholder="省" @change="fetchCity">
                         <el-option :label="item.area_name" :value="item.area_code" v-for="item in provinceList" :key="item.area_code"></el-option>
                     </el-select>
-                    <el-select v-model="queryParams.city_code" placeholder="市" @change="fetchRegion">
+                    <el-select v-model="queryParams.city_code" clearable placeholder="市" @change="fetchRegion">
                         <el-option :label="item.area_name" :value="item.area_code" v-for="item in cityList" :key="item.area_code"></el-option>
                     </el-select>
-                    <el-select v-model="queryParams.district_code" placeholder="区" @change="fetchDistrict">
+                    <el-select v-model="queryParams.district_code" clearable placeholder="区" @change="fetchDistrict">
                         <el-option :label="item.area_name" :value="item.area_code" v-for="item in regionList" :key="item.area_code"></el-option>
                     </el-select>
                 </el-form-item>
@@ -219,8 +219,7 @@ export default {
         default:
           break;
       }
-    },
-
+    }
   },
   data() {
     // var now = new Date();
@@ -235,27 +234,27 @@ export default {
         { label: "已取消 ", value: 3 },
         { label: "待发货", value: 4 },
         { label: "已发货", value: 5 },
-        { label: "已完成", value: 6 },
+        { label: "已完成", value: 6 }
       ],
-      list:[],
-      list1:[],
+      list: [],
+      list1: [],
       list2: [
         { label: "全部", value: 0 },
         { label: "余额 ", value: 1 },
-        { label: "微信", value: 2 },
+        { label: "微信", value: 2 }
       ],
-    provinceList: [],
+      provinceList: [],
       cityList: [],
       regionList: [],
       queryParams: {
         page: 1,
         size: 10,
-        status_id:0,
-        cate_id1:0,
-        cate_id2:0,
-        province_code:"",
-        city_code:"",
-        district_code:"",
+        status_id: 0,
+        cate_id1: 0,
+        cate_id2: 0,
+        province_code: "",
+        city_code: "",
+        district_code: "",
         stime: "",
         etime: "",
         pay_way: 0,
@@ -266,40 +265,43 @@ export default {
         // recipient_name:"",
         // mobilephone:"",
       },
-      select:"main_title",
-      input:"",
+      select: "main_title",
+      input: "",
       formLabelWidth: "120px",
       tableData: { data: [], count: 0 },
-      last_select:"main_title",
-      download_url:''
+      last_select: "main_title",
+      download_url: ""
     };
   },
   methods: {
-    select_item(val){
-        this.queryParams[this.last_select] = '';
-        this.last_select =val;
+    select_item(val) {
+      this.queryParams[this.last_select] = "";
+      this.last_select = val;
     },
-    download(){
-        this.$q({
-            url: "/bg_admin/bg_report/downSaleRecords",
-            method:'POST',
-            params: this.queryParams
-        }).then(res => {
-            this.download_url = res;
-            this.$nextTick(()=>{
-                document.querySelector('#download').click();
-            })
-            //  window.open(res,"_blank");
-        },rej=>{
-            console.log(rej);
-        });
-      },
+    download() {
+      this.$q({
+        url: "/bg_admin/bg_report/downSaleRecords",
+        method: "POST",
+        params: this.queryParams
+      }).then(
+        res => {
+          this.download_url = res;
+          this.$nextTick(() => {
+            document.querySelector("#download").click();
+          });
+          //  window.open(res,"_blank");
+        },
+        rej => {
+          console.log(rej);
+        }
+      );
+    },
     order_status_query(value) {
       this.queryParams.page = 1;
       this.query();
     },
     check(row) {
-      this.$router.push({ path: "/orderInfo",query:{id:row.order_id} });
+      this.$router.push({ path: "/orderInfo", query: { id: row.order_id } });
     },
     getCates1(val) {
       this.queryParams.cate_id2 = 0;
@@ -321,7 +323,7 @@ export default {
       this.queryParams.page = 1;
       this.query();
     },
-     getCates(parent_id) {
+    getCates(parent_id) {
       this.$q({
         url: "/bg_admin/goods/getCates",
         params: { parent_id: parent_id }
@@ -330,12 +332,12 @@ export default {
       });
     },
     datePicker(date) {
-      if(!date) {
-        this.queryParams.stime = '';
-        this.queryParams.etime = '';
+      if (!date) {
+        this.queryParams.stime = "";
+        this.queryParams.etime = "";
         this.queryParams.page = 1;
         this.query();
-        return
+        return;
       }
       this.queryParams.stime = date[0];
       this.queryParams.etime = date[1];
@@ -343,7 +345,7 @@ export default {
       this.query();
     },
     submit() {
-         this.queryParams.page = 1;
+      this.queryParams.page = 1;
       this.query();
     },
     query() {
@@ -354,36 +356,36 @@ export default {
         this.tableData = res;
       });
     },
-      fetchProvince() {
-          this.$q({
-              url:'/bg_admin/index/getAreaList?=440300',
-          }).then(res=>{
-                this.provinceList = res;
-          })
+    fetchProvince() {
+      this.$q({
+        url: "/bg_admin/index/getAreaList?=440300"
+      }).then(res => {
+        this.provinceList = res;
+      });
     },
     fetchCity(area_code) {
-         this.$q({
-              url:'/bg_admin/index/getAreaList?=440300',
-              params:{ parent_area_code: area_code}
-          }).then(res=>{
-                this.cityList =res;
-          })
-            this.queryParams.page = 1;
-          this.query();
+      this.$q({
+        url: "/bg_admin/index/getAreaList?=440300",
+        params: { parent_area_code: area_code }
+      }).then(res => {
+        this.cityList = res;
+      });
+      this.queryParams.page = 1;
+      this.query();
     },
     fetchRegion(area_code) {
-         this.$q({
-              url:'/bg_admin/index/getAreaList?=440300',
-              params:{ parent_area_code: area_code}
-          }).then(res=>{
-                 this.regionList = res;
-          })
-            this.queryParams.page = 1;
-          this.query();
+      this.$q({
+        url: "/bg_admin/index/getAreaList?=440300",
+        params: { parent_area_code: area_code }
+      }).then(res => {
+        this.regionList = res;
+      });
+      this.queryParams.page = 1;
+      this.query();
     },
-    fetchDistrict(){
-         this.queryParams.page = 1;
-          this.query();
+    fetchDistrict() {
+      this.queryParams.page = 1;
+      this.query();
     }
   },
 
