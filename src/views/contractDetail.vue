@@ -82,7 +82,7 @@
                     </div>
                     <el-form inline :label-width="labelWidth">
                         <el-form-item label="收货人姓名：" class="item">
-                            <span class="text">{{res.nickname}}</span>
+                            <span class="text">{{res.group_consignee}}</span>
                         </el-form-item>
                         <el-form-item label="联系电话：" class="item">
                             <span class="text">{{res.group_mobilephone}}</span>
@@ -201,155 +201,155 @@ import upImage from "@/components/Upload/upImage";
 import "../../static/swipebox/lib/ios-orientationchange-fix.js";
 import "../../static/swipebox/js/jquery.swipebox.js";
 export default {
-    name: "contractDetail",
-    mixins: [mixin],
-    components: {
-        upImage: upImage
-    },
-    filters: {
-        format_contract_status(value) {
-            value = Number.parseInt(value);
-            switch (value) {
-                case 1:
-                return "待审核";
-                break;
-                case 2:
-                return "审核拒绝";
-                break;
-                case 3:
-                return "审核通过";
-                break;
-                default:
-                break;
-            }
-        },
-    },
-    data() {
-        var now = new Date();
-        var startDate = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
-        var endDate = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate() + 6}`;
-        // startDate = new Date(startDate)
-        // endDate = new Date(endDate);
-        return {
-            labelWidth:'150px',
-            order_logs: [],
-            res: {},
-            date: [startDate, endDate],
-            startTime: startDate,
-            endTime: endDate,
-            show: false,
-            show1: false,
-            modifyTime: false,  //修改时间
-            styleInfo: false,  //款式清单
-            deduct: false,  //提成方案
-            status_list:[
-                {label:"全部",value:0},
-                {label:"待审核",value:1},
-                {label:"审核拒绝",value:2},
-                {label:"审核通过",value:3},
-            ],
-            dialogFormVisible:false,
-            form: {
-                id: "",
-                group_start_time: '',
-                group_end_time: '',
-                price_info: [],
-                deduct_info: {
-                    deduct_group_end: '',  //团购结束时提成
-                    deduct_group_confirm: {
-                        days_after: '',   //团购交付后多少天
-                        ratio: ''    //提成比例
-                    },
-                    deduct_retail_confirm:{
-                        days_after: '',   //零售交付后多少天
-                        ratio: ''    //提成比例
-                    }
-                }
-            },
-            deduct_info: {
-                deduct_group_end: '',  //团购结束时提成
-                deduct_group_confirm: {
-                    days_after: '',   //团购交付后多少天
-                    ratio: ''    //提成比例
-                },
-                deduct_retail_confirm:{
-                    days_after: '',   //零售交付后多少天
-                    ratio: ''    //提成比例
-                }
-            },
-            formRules: {
-                
-            },
-            form1: {
-                id:'',
-                remark:'',
-            },
-            formRules1: {
-
-            },
-            id: null,
-            tableData:{
-                list:[],
-                count:0
-            },
-            contractList:[]  //合同列表
-        };
-    },
-    methods: {
-        datePicker(date) {
-            if(!date) {
-                this.form.group_start_time = '';
-                this.form.group_end_time = '';
-                return
-            }
-            this.form.group_start_time = date[0];
-            this.form.group_end_time = date[1];
-        },
-        query() {
-            this.$q({
-                url: "/bg_admin/bg_todo/getContractDetail",
-                method:'post',
-                data:{id:this.id}
-            }).then(res => {
-                this.res = res;
-                this.form.deduct_info = res.deduct_json ? res.deduct_json : JSON.parse(JSON.stringify(this.deduct_info));
-                this.form.price_info = res.goods_list ? res.goods_list : [];
-                if(res.group_start_time){
-                    this.date = [res.group_start_time, res.group_end_time]
-                }
-            });
-        },
-        save() {
-            this.form.id = this.id;
-            this.$q({
-                url: "/bg_admin/bg_todo/modify_contract_info",
-                method:'post',
-                data:this.form
-            }).then(res => {
-                this.query()
-                this.modifyTime = false;
-                this.styleInfo = false;
-                this.deduct = false;
-            });
-        },
-        cancel() {
-            this.date = [this.startTime,this.endTime];
-            this.query()
-            this.modifyTime = false;
-            this.styleInfo = false;
-            this.deduct = false;
-        }
-    },
-
-    created() {
-        this.id = this.$route.query.id;
-        this.query();
+  name: "contractDetail",
+  mixins: [mixin],
+  components: {
+    upImage: upImage
+  },
+  filters: {
+    format_contract_status(value) {
+      value = Number.parseInt(value);
+      switch (value) {
+        case 1:
+          return "待审核";
+          break;
+        case 2:
+          return "审核拒绝";
+          break;
+        case 3:
+          return "审核通过";
+          break;
+        default:
+          break;
+      }
     }
+  },
+  data() {
+    var now = new Date();
+    var startDate = `${now.getFullYear()}-${now.getMonth() +
+      1}-${now.getDate()}`;
+    var endDate = `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate() +
+      6}`;
+    // startDate = new Date(startDate)
+    // endDate = new Date(endDate);
+    return {
+      labelWidth: "150px",
+      order_logs: [],
+      res: {},
+      date: [startDate, endDate],
+      startTime: startDate,
+      endTime: endDate,
+      show: false,
+      show1: false,
+      modifyTime: false, //修改时间
+      styleInfo: false, //款式清单
+      deduct: false, //提成方案
+      status_list: [
+        { label: "全部", value: 0 },
+        { label: "待审核", value: 1 },
+        { label: "审核拒绝", value: 2 },
+        { label: "审核通过", value: 3 }
+      ],
+      dialogFormVisible: false,
+      form: {
+        id: "",
+        group_start_time: "",
+        group_end_time: "",
+        price_info: [],
+        deduct_info: {
+          deduct_group_end: "", //团购结束时提成
+          deduct_group_confirm: {
+            days_after: "", //团购交付后多少天
+            ratio: "" //提成比例
+          },
+          deduct_retail_confirm: {
+            days_after: "", //零售交付后多少天
+            ratio: "" //提成比例
+          }
+        }
+      },
+      deduct_info: {
+        deduct_group_end: "", //团购结束时提成
+        deduct_group_confirm: {
+          days_after: "", //团购交付后多少天
+          ratio: "" //提成比例
+        },
+        deduct_retail_confirm: {
+          days_after: "", //零售交付后多少天
+          ratio: "" //提成比例
+        }
+      },
+      formRules: {},
+      form1: {
+        id: "",
+        remark: ""
+      },
+      formRules1: {},
+      id: null,
+      tableData: {
+        list: [],
+        count: 0
+      },
+      contractList: [] //合同列表
+    };
+  },
+  methods: {
+    datePicker(date) {
+      if (!date) {
+        this.form.group_start_time = "";
+        this.form.group_end_time = "";
+        return;
+      }
+      this.form.group_start_time = date[0];
+      this.form.group_end_time = date[1];
+    },
+    query() {
+      this.$q({
+        url: "/bg_admin/bg_todo/getContractDetail",
+        method: "post",
+        data: { id: this.id }
+      }).then(res => {
+        this.res = res;
+        this.form.deduct_info = res.deduct_json
+          ? res.deduct_json
+          : JSON.parse(JSON.stringify(this.deduct_info));
+        this.form.price_info = res.goods_list ? res.goods_list : [];
+        if (res.group_start_time) {
+          this.date = [res.group_start_time, res.group_end_time];
+        }
+      });
+    },
+    save() {
+      this.form.id = this.id;
+      this.$q({
+        url: "/bg_admin/bg_todo/modify_contract_info",
+        method: "post",
+        data: this.form
+      }).then(res => {
+        this.query();
+        this.modifyTime = false;
+        this.styleInfo = false;
+        this.deduct = false;
+      });
+    },
+    cancel() {
+      this.date = [this.startTime, this.endTime];
+      this.query();
+      this.modifyTime = false;
+      this.styleInfo = false;
+      this.deduct = false;
+    }
+  },
+
+  created() {
+    this.id = this.$route.query.id;
+    this.query();
+  }
 };
 </script>
 <style lang="scss">
 .tailor-contractDetail {
-   .body {
+  .body {
     padding-right: 30px;
   }
   .steps {
@@ -367,7 +367,7 @@ export default {
     height: 40px;
     line-height: 40px;
   }
-    .goods {
+  .goods {
     display: flex;
     align-items: center;
     img {
@@ -378,11 +378,11 @@ export default {
       text-align: left;
       width: 160px;
       overflow: hidden;
-      text-overflow:ellipsis; 
-    white-space: nowrap;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
-    .price{
-        text-align: left;
+    .price {
+      text-align: left;
     }
   }
   .section {
@@ -395,134 +395,136 @@ export default {
       }
     }
   }
-  .no-data-text{
-      font-size: 14px;
-      font-weight: normal;
+  .no-data-text {
+    font-size: 14px;
+    font-weight: normal;
   }
-  .group-orders{
-      margin-bottom: 20px;
-      .label{
-           background-color: #f5f5f5;
-      }
- .group-title {
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 30px;
-    cursor: pointer;
-    background-color: #f5f5f5;
-    border: 1px solid #ddd;
-    border-bottom: none;
-  }
-    .photo {
-    display: flex;
-    align-items: center;
-    border: 1px solid #ddd;
-    border-top: none;
+  .group-orders {
+    margin-bottom: 20px;
     .label {
-      width: 100px;
-      text-align: center;
-      border-right: 1px solid #ddd;
-      height: 120px;
-      line-height: 120px;
+      background-color: #f5f5f5;
     }
-    .content {
-      padding: 0 20px;
-      flex: 1;
-      height: 120px;
+    .group-title {
+      height: 40px;
       display: flex;
       align-items: center;
-      overflow: auto;
+      justify-content: space-between;
+      padding: 0 30px;
+      cursor: pointer;
+      background-color: #f5f5f5;
+      border: 1px solid #ddd;
+      border-bottom: none;
     }
-  }
-  .img {
-    width: 100px;
-    height: 100px;
-    margin-right: 10px;
-  }
-    .row {
-    line-height: 50px;
-    display: flex;
-    align-items: center;
-    border: 1px solid #ddd;
-    border-top: none;
-    .label {
-      width: 100px;
-      text-align: center;
-      border-right: 1px solid #ddd;
-    }
-    .content {
-      padding: 0 20px;
-      flex: 1;
-    }
-  }
-  
-  .table {
-    border: 1px solid #ddd;
-    overflow: hidden;
-    border-bottom: none;
-    .cell {
-      box-sizing: border-box;
-      width: 50%;
-      float: left;
-      line-height: 40px;
+    .photo {
       display: flex;
-      border-bottom: 1px solid #ddd;
-      &:nth-of-type(2n-1) {
+      align-items: center;
+      border: 1px solid #ddd;
+      border-top: none;
+      .label {
+        width: 100px;
+        text-align: center;
         border-right: 1px solid #ddd;
+        height: 120px;
+        line-height: 120px;
       }
+      .content {
+        padding: 0 20px;
+        flex: 1;
+        height: 120px;
+        display: flex;
+        align-items: center;
+        overflow: auto;
+      }
+    }
+    .img {
+      width: 100px;
+      height: 100px;
+      margin-right: 10px;
+    }
+    .row {
+      line-height: 50px;
+      display: flex;
+      align-items: center;
+      border: 1px solid #ddd;
+      border-top: none;
       .label {
         width: 100px;
         text-align: center;
         border-right: 1px solid #ddd;
       }
       .content {
+        padding: 0 20px;
         flex: 1;
-        padding-left: 20px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
       }
     }
-    .remark {
-      width: 100%;
-      padding-right: 20px;
-      border-right: none !important;
-      .content {
-        display: flex;
-        justify-content: space-between;
-      }
-    }
-  }
-  }
-   .express{
-        height: 300px;
-        overflow-y:auto;
-        border:1px solid #ddd;
+
+    .table {
+      border: 1px solid #ddd;
+      overflow: hidden;
+      border-bottom: none;
+      .cell {
         box-sizing: border-box;
-     .express-step{
-            padding:20px;
-            box-sizing: border-box;
-     }
-   }
-   .royalty{
-      border-collapse:collapse;
-      font-size: 14px;
+        width: 50%;
+        float: left;
+        line-height: 40px;
+        display: flex;
+        border-bottom: 1px solid #ddd;
+        &:nth-of-type(2n-1) {
+          border-right: 1px solid #ddd;
+        }
+        .label {
+          width: 100px;
+          text-align: center;
+          border-right: 1px solid #ddd;
+        }
+        .content {
+          flex: 1;
+          padding-left: 20px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+      .remark {
+        width: 100%;
+        padding-right: 20px;
+        border-right: none !important;
+        .content {
+          display: flex;
+          justify-content: space-between;
+        }
+      }
     }
-    
-    .royalty, .royalty th, .royalty td{
-        border: 1px solid #ebeef5;
+  }
+  .express {
+    height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+    .express-step {
+      padding: 20px;
+      box-sizing: border-box;
     }
-    .royalty th{
-        background: rgb(245, 245, 245);
-        color:#909399;
-        height:40px;
-    }
-    .royalty td{
-        text-align:center;
-        padding: 10px 20px;
-    }
+  }
+  .royalty {
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  .royalty,
+  .royalty th,
+  .royalty td {
+    border: 1px solid #ebeef5;
+  }
+  .royalty th {
+    background: rgb(245, 245, 245);
+    color: #909399;
+    height: 40px;
+  }
+  .royalty td {
+    text-align: center;
+    padding: 10px 20px;
+  }
 }
 </style>
 

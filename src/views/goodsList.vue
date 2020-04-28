@@ -232,17 +232,15 @@ export default {
     },
     getCates1(val) {
       this.queryParams.cate_id2 = 0;
-      if (val == 0) {
-        this.list1 = [];
-        return;
-      }
       this.$q({
         url: "/bg_admin/goods/getCates",
         params: { parent_id: val }
       }).then(res => {
         this.list1 = res;
+        if (val == 0) {
+          this.list1 = [];
+        }
       });
-
       this.queryParams.cate_id1 = val;
       this.queryParams.page = 1;
       this.query();
@@ -442,11 +440,11 @@ export default {
       text-align: left;
       width: 300px;
       overflow: hidden;
-      text-overflow:ellipsis; 
-    white-space: nowrap;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
-    .price{
-        text-align: left;
+    .price {
+      text-align: left;
     }
   }
 }
