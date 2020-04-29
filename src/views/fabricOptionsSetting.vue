@@ -59,7 +59,7 @@
 				</el-table-column>
             </el-table>
         </div>
-        <div class="pagination">
+        <!-- <div class="pagination">
             <el-pagination
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
@@ -69,7 +69,7 @@
             layout="total, sizes, prev, pager, next, jumper"
             :total="tableData.Total">
             </el-pagination>
-        </div>
+        </div> -->
         <el-dialog :title="title?'编辑':'添加'" :visible.sync="show" >
             <el-form :model="form" :rules="formRules" ref="form" label-width="120px">
                 <el-form-item label="所属选项："  prop="truename">
@@ -142,16 +142,20 @@ export default {
       var data = { id: row.id, status_id: 1 };
       if (row.status_id === 1) {
         data.status_id = 0;
-         this.toggle("确定要停用吗？停用后相关的商品需重新编辑上架！", "/bg_admin/bg_management/setFabricItemValueStatus", data);
-      }else{
+        this.toggle(
+          "确定要停用吗？停用后相关的商品需重新编辑上架！",
+          "/bg_admin/bg_management/setFabricItemValueStatus",
+          data
+        );
+      } else {
         this.$q({
-            method: "post",
-            url: "/bg_admin/bg_management/setFabricItemValueStatus",
-            data
-          }).then(res => {
-            this.$message.success("操作成功");
-            this.query();
-          });
+          method: "post",
+          url: "/bg_admin/bg_management/setFabricItemValueStatus",
+          data
+        }).then(res => {
+          this.$message.success("操作成功");
+          this.query();
+        });
       }
     },
     handleAvatarSuccess(res, file) {

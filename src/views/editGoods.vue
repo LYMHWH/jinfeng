@@ -7,13 +7,7 @@
         <div class="btns">
             <el-form :model="form" ref="form"  :inline="true" label-width="130px" :rules="form_rule">
                 <div class="info-container">
-                    <div style="float:right;margin-right:200px;">
-                      <el-form-item label="包含产品类型：" prop="product_cate_ids">
-                        <el-checkbox-group  v-model="form.product_cate_ids">
-                          <el-checkbox v-for="(v,i) in productTypeList" :label="v.id" :key="i">{{v.name}}</el-checkbox>
-                        </el-checkbox-group>
-                      </el-form-item>
-                    </div>
+                    
                     <div style="width:1200px;">
                         <div>
                             <el-form-item label="商品类目："  prop="first_cate_id">
@@ -27,6 +21,13 @@
                                 </el-select>
                             </el-form-item>
                         </div>    
+                        <div>
+                          <el-form-item label="包含产品类型：" prop="product_cate_ids">
+                            <el-checkbox-group  v-model="form.product_cate_ids">
+                              <el-checkbox v-for="(v,i) in productTypeList" :label="v.id" :key="i">{{v.name}}</el-checkbox>
+                            </el-checkbox-group>
+                          </el-form-item>
+                        </div>
                         <div>
                             <el-form-item label="商品标题：" prop="main_title">
                                 <el-input v-model="form.main_title" placeholder="请输入商品标题" maxlength="50"></el-input>
