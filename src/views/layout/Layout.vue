@@ -21,6 +21,7 @@
         <el-menu
           router
           default-active="1"
+          :unique-opened="true"
           @open="handleOpen"
           @close="handleClose">
           <el-submenu index="1">
@@ -148,9 +149,7 @@ export default {
       shopList: []
     };
   },
-  created() {
-    
-  },
+  created() {},
   methods: {
     handleClose() {},
     handleOpen() {},
@@ -185,7 +184,7 @@ export default {
 </script>
 <style lang="scss">
 .tailor-shop-layout {
-  height: 98%;
+  height: 88%;
   display: flex;
   flex-direction: column;
   .tailor-shop-layout-header {
@@ -197,15 +196,15 @@ export default {
     align-items: center;
     justify-content: space-between;
     .tailor-shop-layout-title {
-        font-size: 24px;
-        display: flex;
-        align-items: center;
-        .line {
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      .line {
         height: 24px;
         width: 2px;
         background-color: #fff;
         margin: 0 20px;
-        }
+      }
     }
   }
   .tailor-shop-layout-login {
@@ -218,6 +217,7 @@ export default {
   .tailor-shop-layout-container {
     flex: 1;
     display: flex;
+    height: 100%;
     .tailor-shop-layout-nav-menu {
       width: 220px;
       border-right: 1px solid #e6e6e6;
@@ -226,9 +226,10 @@ export default {
       .el-menu {
         border: none;
       }
+      height: 100%;
     }
     .tailor-shop-layout-page-content {
-      margin: 0 0 0 50px;
+      margin: 0 0 0 30px;
       padding-bottom: 50px;
       padding-top: 20px;
       flex: 1;
@@ -257,10 +258,10 @@ export default {
     text-decoration: underline;
   }
   .sub-btns {
-      margin-top: 20px;
-      .el-button{
-        width: 200px;
-      }
+    margin-top: 20px;
+    .el-button {
+      width: 200px;
+    }
   }
 }
 </style>
