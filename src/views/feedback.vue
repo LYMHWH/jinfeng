@@ -24,11 +24,11 @@
                     label="昵称"
                     >
                     </el-table-column>
-                    <!-- <el-table-column
-                    prop="goods_id"
-                    label="真实姓名"
+                    <el-table-column
+                    prop="wxapp_role"
+                    label="角色"
                     show-overflow-tooltip>
-                    </el-table-column> -->
+                    </el-table-column>
                     <el-table-column
                     prop="mobilephone"
                     label="手机号"
@@ -128,7 +128,7 @@ import "../../static/swipebox/js/jquery.swipebox.js";
 export default {
   name: "feedback",
   mixins: [mixin],
-   components: {
+  components: {
     upImage: upImage
   },
   data() {
@@ -136,22 +136,20 @@ export default {
       show: false,
       show1: true,
       title: 0,
-      type_list:[
-          {label:"全部",value:-1},
-          {label:"待处理",value:0},
-          {label:"已处理",value:1},
+      type_list: [
+        { label: "全部", value: -1 },
+        { label: "待处理", value: 0 },
+        { label: "已处理", value: 1 }
       ],
       form: {
         id: "",
-        remark: "",
+        remark: ""
       },
       formRules: {
         image_url: [
           { required: true, message: "请上传图片", trigger: "change" }
         ],
-        rank: [
-          { required: true, message: "请填写排序号", trigger: "blur" }
-        ],
+        rank: [{ required: true, message: "请填写排序号", trigger: "blur" }]
       },
       form1: {
         truename: "",
@@ -181,15 +179,15 @@ export default {
       },
       item_name: "",
       item_id: "",
-    tableData:{
-        data:[],
-        count:0   
-    }
+      tableData: {
+        data: [],
+        count: 0
+      }
     };
   },
   methods: {
     check_photos(row) {
-      var arr = row.pictures.split('###');
+      var arr = row.pictures.split("###");
       arr.forEach((element, i) => {
         arr[i] = { href: element };
       });
@@ -224,20 +222,20 @@ export default {
         this.tableData = res;
       });
     },
-    query1(){
-        this.queryParams.page =1;
-        this.query();
+    query1() {
+      this.queryParams.page = 1;
+      this.query();
     },
     add(row) {
       this.clean(this.form);
-      this.form.id = row.id; 
+      this.form.id = row.id;
       this.show = true;
     },
     mark(row) {
       this.toggle(
         "确定已处理完成？",
         "/bg_admin/bg_management/completeFeadback",
-        { id: row.id },
+        { id: row.id }
       );
     },
     // edit(row) {
@@ -246,8 +244,13 @@ export default {
     //   this.show = true;
     // },
     submit() {
-      this.post("form", '/bg_admin/bg_management/addHandleResult', this.form, "show");
-    },
+      this.post(
+        "form",
+        "/bg_admin/bg_management/addHandleResult",
+        this.form,
+        "show"
+      );
+    }
     // submit1() {
     //   this.$refs["form1"].validate(valid => {
     //     if (valid) {
@@ -276,7 +279,7 @@ export default {
 </script>
 <style lang="scss">
 .tailor-feedback {
-    @import url("../../static/swipebox/css/swipebox.min.css");
+  @import url("../../static/swipebox/css/swipebox.min.css");
   .btns {
     margin-bottom: 20px;
   }
@@ -314,9 +317,9 @@ export default {
     height: 178px;
     display: block;
   }
-  .img{
-      width: 50px;
-      height: 50px;
+  .img {
+    width: 50px;
+    height: 50px;
   }
 }
 </style>
