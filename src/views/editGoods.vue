@@ -7,7 +7,23 @@
         <div class="btns">
             <el-form :model="form" ref="form"  :inline="true" label-width="130px" :rules="form_rule">
                 <div class="info-container">
-                    
+                    <div style="float:right;margin-right:200px;">
+                      <div>
+                        <el-form-item label="包含产品类型：" prop="product_cate_ids">
+                          <el-checkbox-group  v-model="form.product_cate_ids">
+                            <el-checkbox v-for="(v,i) in productTypeList" :label="v.id" :key="i" @change="selectBtn($event,v)">{{v.name}}</el-checkbox>
+                          </el-checkbox-group>
+                        </el-form-item>
+                      </div>
+                      <div>
+                        <el-form-item label="">
+                          <div v-for="(item, index) in form.product_style_nums">
+                            <span>{{item.name}}：</span>
+                            <el-input v-model="item.style_num" size="mini" placeholder="请输入款式号" maxlength="50"></el-input>
+                          </div>
+                        </el-form-item>
+                      </div>
+                    </div>
                     <div style="width:1200px;">
                         <div>
                             <el-form-item label="商品类目："  prop="first_cate_id">
@@ -21,13 +37,13 @@
                                 </el-select>
                             </el-form-item>
                         </div>    
-                        <div>
+                        <!-- <div>
                           <el-form-item label="包含产品类型：" prop="product_cate_ids">
                             <el-checkbox-group  v-model="form.product_cate_ids">
                               <el-checkbox v-for="(v,i) in productTypeList" :label="v.id" :key="i">{{v.name}}</el-checkbox>
                             </el-checkbox-group>
                           </el-form-item>
-                        </div>
+                        </div> -->
                         <div>
                             <el-form-item label="商品标题：" prop="main_title">
                                 <el-input v-model="form.main_title" placeholder="请输入商品标题" maxlength="50"></el-input>
@@ -226,7 +242,8 @@ export default {
         tt: 1,
         tid: 0,
         size_template_id: "",
-        product_cate_ids: [] //包含产品类型
+        product_cate_ids: [], //包含产品类型
+        product_style_nums: []
         //   freight:'',
       },
       id: "",
@@ -347,6 +364,21 @@ export default {
     }
   },
   methods: {
+    selectBtn(val, item) {
+      if (val) {
+        this.form.product_style_nums.push({
+          id: item.id,
+          name: item.name,
+          code: item.code,
+          style_num: ""
+        });
+      } else {
+        this.form.product_style_nums.splice(
+          this.form.product_style_nums.findIndex(t => t.id === item.id),
+          1
+        );
+      }
+    },
     getProductCates() {
       this.$q({
         url: "/bg_admin/product_category/getProductCates"
@@ -558,7 +590,8 @@ export default {
       data.images = data.images;
       data.desc = data.desc;
       data.attrs = this.list6;
-      data.product_cate_ids = data.product_cate_ids;
+      // data.product_cate_ids = data.product_cate_ids;
+      data.product_style_nums = data.product_style_nums;
       data.id = this.id;
       return data;
     },
@@ -686,7 +719,12 @@ export default {
         this.form.sub_title = res.sub_title;
         this.form.style_num = res.style_num;
         this.form.size_template_id = res.size_template_id;
-        this.form.product_cate_ids = res.product_cate_ids.map(Number);
+        this.form.product_cate_ids = res.product_style_nums.map(
+          item => item.id
+        );
+        this.form.product_style_nums = res.product_style_nums
+          ? res.product_style_nums
+          : [];
         this.process_fabrics_data(res);
         this.form.grades = [
           {
@@ -736,6 +774,8 @@ export default {
   }
   .btns {
     margin-bottom: 20px;
+    min-width: 1114px;
+    overflow: auto;
   }
   .title {
     height: 40px;
