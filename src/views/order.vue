@@ -197,7 +197,7 @@
           style="width: 100%"
         >
           <el-table-column label="商品信息" width="280px">
-            <template slot-scope="scope">
+            <!-- <template slot-scope="scope">
               <div class="goods">
                 <img style="width:80px;height:80px;" :src="scope.row.image" alt>
                 <div>
@@ -208,8 +208,27 @@
                     </el-tooltip>
                   <div class="price" style="text-align:left;">
                     <span style="color:red;margin-right:5px;">￥ {{scope.row.price}}</span>
-                    <!-- <span style=" text-decoration:line-through;">￥{{scope.row.min_price}}</span> -->
                   </div>
+                </div>
+              </div>
+            </template> -->
+            <template slot-scope="scope">
+              <div class="goods">
+                <img style="width:80px;height:80px;" :src="scope.row.goods_image" alt=""/>
+                <div>
+                  <el-tooltip  effect="dark" :content="scope.row.main_title" placement="top">
+                    <div class="name">
+                      {{scope.row.main_title}}
+                    </div>
+                  </el-tooltip>
+                  <el-tooltip  effect="dark" :content="'商品单价=￥'+scope.row.group_price+'（款式价格）+'+'￥'+scope.row.personalization_price+'（专属定制价格）'" placement="top">
+                    <div v-if="scope.row.sell_type_id == 1" class="name" style="margin:0;">
+                      商品单价<span style="color:red;margin-right:5px;">￥{{(Number(scope.row.group_price)+Number(scope.row.personalization_price))}}</span>
+                    </div>
+                    <div v-if="scope.row.sell_type_id == 2" class="name" style="margin:0;">
+                      商品单价<span style="color:red;margin-right:5px;">￥{{(Number(scope.row.retail_price)+Number(scope.row.personalization_price))}}</span>
+                    </div>
+                  </el-tooltip>
                 </div>
               </div>
             </template>
