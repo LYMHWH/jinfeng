@@ -21,8 +21,8 @@
                     <div>
                         <el-form-item required label="内容：" prop="allow_content">
                             <el-radio-group v-model="form.allow_content">
-                                <el-radio :label="1">允许自定义内容</el-radio>
                                 <el-radio :label="0">不允许自定义内容</el-radio>
+                                <el-radio :label="1">允许自定义内容</el-radio>
                             </el-radio-group>
                         </el-form-item>
                     </div>
@@ -135,7 +135,7 @@ export default {
       form: {
         name: "",
         code: "",
-        allow_content: 1,
+        allow_content: 0,
         // content:[],
         type_id: 1,
         price: "",
