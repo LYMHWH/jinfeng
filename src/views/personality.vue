@@ -19,6 +19,13 @@
                         </el-form-item>
                     </div>
                     <div>
+                        <el-form-item label="品类：" prop="cate_ids">
+                            <el-checkbox-group  v-model="form.cate_ids">
+                              <el-checkbox  v-for="(v,i) in productCates" :label="v.id" :key="i">{{v.name}}</el-checkbox>
+                            </el-checkbox-group>
+                        </el-form-item>
+                    </div>
+                    <div>
                         <el-form-item required label="内容：" prop="allow_content">
                             <el-radio-group v-model="form.allow_content">
                                 <el-radio :label="0">不允许自定义内容</el-radio>
@@ -136,7 +143,7 @@ export default {
         name: "",
         code: "",
         allow_content: 0,
-        // content:[],
+        cate_ids: [],
         type_id: 1,
         price: "",
         attrs: []
@@ -149,7 +156,14 @@ export default {
           { required: true, message: "请输入个性化工艺编码", trigger: "blur" }
         ],
         price: [{ required: true, message: "请输入价格", trigger: "blur" }],
-        // content:[{type: "array",required:true,message: '请选择自定义内容方式', trigger: 'change'}],
+        cate_ids: [
+          {
+            type: "array",
+            required: true,
+            message: "请选择品类",
+            trigger: "change"
+          }
+        ],
         attrs: [
           {
             type: "array",
@@ -167,10 +181,22 @@ export default {
       x_token: {
         "X-Token": ""
       },
-      index: 0
+      index: 0,
+      productCates: []
     };
   },
+  created() {
+    this.manageProductCates();
+  },
   methods: {
+    manageProductCates() {
+      this.$q({
+        url: "/bg_admin/product_category/manageProductCates",
+        params: this.queryParams
+      }).then(res => {
+        this.productCates = res;
+      });
+    },
     handleAvatarSuccess(res, file) {
       var { result } = res;
       this.form[`photos${this.index}`].push({
@@ -237,6 +263,7 @@ export default {
       data.price = obj.price;
       data.items = items;
       data.type_id = obj.type_id;
+      data.cate_ids = obj.cate_ids;
 
       return data;
     },

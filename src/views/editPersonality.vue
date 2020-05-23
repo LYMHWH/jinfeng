@@ -18,7 +18,13 @@
                             <el-input placeholder="请输入个性化工艺编码" v-model="form.code"></el-input>
                         </el-form-item>
                     </div>
-                    
+                    <div>
+                        <el-form-item label="品类：" prop="cate_ids">
+                            <el-checkbox-group  v-model="form.cate_ids">
+                              <el-checkbox  v-for="(v,i) in productCates" :label="v.id" :key="i">{{v.name}}</el-checkbox>
+                            </el-checkbox-group>
+                        </el-form-item>
+                    </div>
                     <div>
                         <el-form-item required label="内容：" prop="allow_content">
                             <el-radio-group v-model="form.allow_content">
@@ -138,7 +144,7 @@ export default {
         name: "",
         code: "",
         allow_content: 1,
-        // content:[],
+        cate_ids: [],
         type_id: 1,
         price: "",
         attrs: []
@@ -151,7 +157,14 @@ export default {
           { required: true, message: "请输入个性化工艺编码", trigger: "blur" }
         ],
         price: [{ required: true, message: "请输入价格", trigger: "blur" }],
-        // content:[{type: "array",required:true,message: '请选择自定义内容方式', trigger: 'change'}],
+        cate_ids: [
+          {
+            type: "array",
+            required: true,
+            message: "请选择品类",
+            trigger: "change"
+          }
+        ],
         attrs: [
           {
             type: "array",
@@ -170,7 +183,8 @@ export default {
         "X-Token": ""
       },
       index: 0,
-      id: ""
+      id: "",
+      productCates: []
     };
   },
   methods: {
@@ -240,6 +254,7 @@ export default {
       data.price = obj.price;
       data.items = items;
       data.type_id = obj.type_id;
+      data.cate_ids = obj.cate_ids;
 
       return data;
     },
@@ -277,11 +292,17 @@ export default {
         params: { id: this.id }
       }).then(res => {
         console.log(res);
-        this.form = { ...this.form, ...res };
-        var items = res.items;
-        items.forEach(v => {
-          this.form.attrs.push(v.item_name);
-          this.$set(this.form, `photos${v.item_name}`, v.photos);
+        this.$q({
+          url: "/bg_admin/product_category/manageProductCates",
+          params: this.queryParams
+        }).then(res1 => {
+          this.productCates = res1;
+          this.form = { ...this.form, ...res };
+          var items = res.items;
+          items.forEach(v => {
+            this.form.attrs.push(v.item_name);
+            this.$set(this.form, `photos${v.item_name}`, v.photos);
+          });
         });
         //  this.transfer_content(res);
       });
