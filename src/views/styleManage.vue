@@ -30,11 +30,12 @@
       >
         <el-table-column type="index" width="50"></el-table-column>
         <el-table-column prop="name" label="着装风格"></el-table-column>
+        <el-table-column prop="code" label="编码"></el-table-column>
         <el-table-column prop="status_id" label="状态" show-overflow-tooltip>
           <template slot-scope="scope">
             <span
-              :class="[scope.row.status_id ?'red':'green']"
-              v-text="scope.row.status_id ?'停用':'启用'"
+              :class="[scope.row.status_id ?'green':'red']"
+              v-text="scope.row.status_id ?'启用':'停用'"
             ></span>
           </template>
         </el-table-column>
@@ -47,8 +48,8 @@
               @click="setting(scope.row)"
               type="text"
               size="small"
-              :class="[scope.row.status_id ?'green':'red']"
-            >{{scope.row.status_id ?'启用':'停用'}}</el-button>
+              :class="[scope.row.status_id ?'red':'green']"
+            >{{scope.row.status_id ?'停用':'启用'}}</el-button>
             <el-button @click="del(scope.row)" type="text" size="small" class="red">删除</el-button>
           </template>
         </el-table-column>
@@ -70,6 +71,9 @@
         <el-form-item label="着装风格：" prop="name">
           <el-input style="width:300px;" v-model="form.name" placeholder="请输入着装风格"></el-input>
         </el-form-item>
+        <el-form-item label="编码：" prop="code">
+          <el-input style="width:300px;" v-model="form.code" placeholder="请输入编码"></el-input>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="show = false">取 消</el-button>
@@ -85,7 +89,7 @@ import upImage from "@/components/Upload/upImage";
 export default {
   name: "cityPartnerManage",
   mixins: [mixin],
-   components: {
+  components: {
     upImage: upImage
   },
   data() {
@@ -93,42 +97,43 @@ export default {
       show: false,
       title: 0,
       formRules: {
-        name: [
-          { required: true, message: "请输入着装风格", trigger: "blur" }
-        ],
+        name: [{ required: true, message: "请输入着装风格", trigger: "blur" }],
+        code: [{ required: true, message: "请输入编码", trigger: "blur" }]
       },
       form: {
         name: "",
+        code: ""
       },
       formLabelWidth: "70px",
       queryParams: {
         size: 10,
         page: 1,
-        skey:"",
+        skey: ""
       },
-      tableData:{
+      tableData: {
         count: 0,
-        data:[]
+        data: []
       },
-      multipleSelection: null, //选中的行数据
+      multipleSelection: null //选中的行数据
     };
   },
   methods: {
-    handleSelectionChange(val){
+    handleSelectionChange(val) {
       this.multipleSelection = val;
     },
     setting(row) {
       var data = { id: row.id, status_id: 1 };
-      var text = '停用'
+      var text = "启用";
       if (row.status_id === 1) {
         data.status_id = 0;
-        text = '启用'
+        text = "停用";
       }
-      this.$confirm(`确定要${text}?`, '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
+      this.$confirm(`确定要${text}?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
           this.$q({
             method: "post",
             url: "/bg_admin/wearing_style/modifyStyleStatus",
@@ -137,8 +142,8 @@ export default {
             this.$message.success("操作成功");
             this.query();
           });
-        }).catch(() => {
-        });
+        })
+        .catch(() => {});
     },
     query() {
       this.$q({
@@ -154,16 +159,15 @@ export default {
       this.show = true;
     },
     del(row) {
-      this.delete(
-        "确定要删除吗？",
-        "/bg_admin/wearing_style/deleteStyle",
-        { id: row.id }
-      );
+      this.delete("确定要删除吗？", "/bg_admin/wearing_style/deleteStyle", {
+        id: row.id
+      });
     },
     edit(row) {
       this.title = 1;
       this.form.id = row.id;
       this.form.name = row.name;
+      this.form.code = row.code;
       this.show = true;
     },
     submit() {
@@ -174,11 +178,11 @@ export default {
       this.post("form", url, this.form, "show");
     },
     moveUp() {
-      if(!this.condition()){
+      if (!this.condition()) {
         return;
       }
       var data = {
-        id: this.multipleSelection.id,
+        id: this.multipleSelection.id
       };
       this.$q({
         method: "post",
@@ -190,11 +194,11 @@ export default {
       });
     },
     moveDown() {
-      if(!this.condition()){
+      if (!this.condition()) {
         return;
       }
       var data = {
-        id: this.multipleSelection.id,
+        id: this.multipleSelection.id
       };
       this.$q({
         method: "post",
@@ -205,12 +209,12 @@ export default {
         this.query();
       });
     },
-    condition(){
-      if(!this.multipleSelection){
-        this.$message.error('请先选择一行数据');
-        return false
+    condition() {
+      if (!this.multipleSelection) {
+        this.$message.error("请先选择一行数据");
+        return false;
       } else {
-        return true
+        return true;
       }
     }
   },
